@@ -1,0 +1,17 @@
+[
+    {
+        "Weight": 20,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "-BlacklistedSlot"
+        ],
+        "Actions": [
+            "Caress", "-BlacklistedAction"
+        ],
+        "Items": [
+            "*", "-BlacklistedItem"
+        ]
+    }
+]
+
