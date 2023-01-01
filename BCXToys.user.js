@@ -4,6 +4,7 @@
 // @version 0.1
 // @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
 // @author ItsNorin
+// @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
 // @match https://bondageprojects.elementfx.com/*
 // @match https://www.bondageprojects.elementfx.com/*
 // @match https://bondage-europe.com/*
@@ -38,7 +39,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         name: 'BCXToys',
         fullName: 'Bondage Club XToys Integration',
         version: BCXToys_Version,
-        repository: 'https://github.com/',
+        repository: 'https://github.com/ItsNorin/Bondage-Club-XToys-Integration',
     });
 
     await waitFor(() => ServerIsConnected && ServerSocket);
