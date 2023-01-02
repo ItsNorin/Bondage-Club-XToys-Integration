@@ -62,31 +62,6 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         console.log('Disconnected from XToys');
     };
 
-
-    // composes and sends events to xtoys
-    function xToysSendIntensityEvent(actionName, assetGroupName, level = 0) {
-        if (!xToysConnected) {
-            console.log('Failed to send to XToys, not connected.');
-            return;
-        }
-        var toSend = '{"action": "'+ actionName + '", "assetGroupName": "' + assetGroupName + '", "level":' + level + '}';
-        console.log('Sending to XToys: ' + toSend);
-        xToysSocket.send(toSend);
-    }
-
-    function xToysSendActivityEvent(assetGroupName, actionName, assetName = null) {
-        if (!xToysConnected) {
-            console.log('Failed to send to XToys, not connected.');
-            return;
-        }
-        var toSend = '{"action": "activityEvent", "assetGroupName": "' + assetGroupName 
-            + '", "actionName": "' + actionName 
-            + '", "assetName": "' + assetName 
-            + '"}';
-        console.log('Sending to XToys: ' + toSend);
-        xToysSocket.send(toSend);
-    }
-
     // sends any amount of arguements to XToys Websocket
     // actionName - string 
     // args - array of [string, any type]
@@ -119,16 +94,13 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     }
 
 
-
-
-
     // On every chat room message, check what should be sent to xtoys
     ServerSocket.on("ChatRoomMessage", async (data) => {
         if (data == null
             || data.Content == null
             || BCXToysIgnoreMsgContents.has(data.Content)
             || data.Type == null
-            || BCXToysIgnoreMsgTypes.has(data.Type)
+           // || BCXToysIgnoreMsgTypes.has(data.Type)
         ) {
             return;
         }
@@ -150,15 +122,28 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
             var level = -1;
             switch (data.Content) {
-                case 'VibeDecreaseTo-1': level = 0; break;
+                case 'VibeDecreaseTo-1':
+                case 'ItemButtInflVibeButtPlugDecreaseToi0':
+                     level = 0; break;
                 case 'VibeDecreaseTo0':
-                case 'VibeIncreaseTo0': level = 1; break;
+                case 'VibeIncreaseTo0': 
+                case 'ItemButtInflVibeButtPlugIncreaseToi1':
+                case 'ItemButtInflVibeButtPlugDecreaseToi1':
+                    level = 1; break;
                 case 'VibeDecreaseTo1':
-                case 'VibeIncreaseTo1': level = 2; break;
+                case 'VibeIncreaseTo1': 
+                case 'ItemButtInflVibeButtPlugIncreaseToi2':
+                case 'ItemButtInflVibeButtPlugDecreaseToi2':
+                    level = 2; break;
                 case 'VibeDecreaseTo2':
-                case 'VibeIncreaseTo2': level = 3; break;
+                case 'VibeIncreaseTo2': 
+                case 'ItemButtInflVibeButtPlugIncreaseToi3':
+                case 'ItemButtInflVibeButtPlugDecreaseToi3':
+                    level = 3; break;
                 case 'VibeDecreaseTo3':
-                case 'VibeIncreaseTo3': level = 4; break;
+                case 'VibeIncreaseTo3': 
+                case 'ItemButtInflVibeButtPlugIncreaseToi4':
+                    level = 4; break;
             }
 
             var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
@@ -169,29 +154,35 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         }
 
         // Toy inflation events
-        /*
         if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
             var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
             if (assetName == null) { return; }
 
             var level = -1;
             switch (data.Content) {
-                case 'VibeDecreaseTo-1': level = 0; break;
-                case 'VibeIncreaseTo0': level = 1; break;
-                case 'VibeIncreaseTo1': level = 2; break;
-                case 'VibeIncreaseTo2': level = 3; break;
-                case 'VibeIncreaseTo3': level = 4; break;
+                case 'ItemButtInflVibeButtPlugDecreaseTof0': 
+                    level = 0; break;
+                case 'ItemButtInflVibeButtPlugIncreaseTof1': 
+                case 'ItemButtInflVibeButtPlugDecreaseTof1':
+                    level = 1; break;
+                case 'ItemButtInflVibeButtPlugIncreaseTof2': 
+                case 'ItemButtInflVibeButtPlugDecreaseTof2':
+                    level = 2; break;
+                case 'ItemButtInflVibeButtPlugIncreaseTof3': 
+                case 'ItemButtInflVibeButtPlugDecreaseTof3':
+                    level = 3; break;
+                case 'ItemButtInflVibeButtPlugIncreaseTof4': 
+                    level = 4; break;
             }
 
             var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
 
             if (activityGroup != null && level >= 0) { 
-                xToysSendToyEvent(activityGroup, level);
+                xToysSendData('inflationEvent', [['assetGroupName', activityGroup], ['level', level]]);
             }
             
         }
-        */
-
+        
         console.log(data);
     });
 

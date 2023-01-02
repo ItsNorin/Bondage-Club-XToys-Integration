@@ -1,6 +1,9 @@
 # Bondage Club XToys Integration
  Sends in game actions and toy activity to an XToys script.
 
+### Note
+This is still in development and may not even work. If you want to try to use it now, be prepared to figure some things out lmao
+
 ## Usage
 
 1. Install Tampermonkey extension, add BCXToys.user.js as a userscript.
