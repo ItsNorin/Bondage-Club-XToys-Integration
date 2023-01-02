@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Bondage Club XToys Integration
 // @namespace https://www.bondageprojects.com/
-// @version 0.1
+// @version 0.2
 // @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
 // @author ItsNorin
 // @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
@@ -14,7 +14,7 @@
 // @grant none
 // ==/UserScript==
 
-const BCXToys_Version = "0.1";
+const BCXToys_Version = "0.2";
 
 const BCXToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
@@ -64,12 +64,12 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
 
     // composes and sends events to xtoys
-    function xToysSendToyEvent(assetGroupName, level = 0) {
+    function xToysSendIntensityEvent(actionName, assetGroupName, level = 0) {
         if (!xToysConnected) {
             console.log('Failed to send to XToys, not connected.');
             return;
         }
-        var toSend = '{"action": "toyEvent", "assetGroupName": "' + assetGroupName + '", "level":' + level + '}';
+        var toSend = '{"action": "'+ actionName + '", "assetGroupName": "' + assetGroupName + '", "level":' + level + '}';
         console.log('Sending to XToys: ' + toSend);
         xToysSocket.send(toSend);
     }
@@ -86,6 +86,39 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         console.log('Sending to XToys: ' + toSend);
         xToysSocket.send(toSend);
     }
+
+    // sends any amount of arguements to XToys Websocket
+    // actionName - string 
+    // args - array of [string, any type]
+    function xToysSendData(actionName, args = null) {
+        if (!xToysConnected) {
+            console.log('Failed to send to XToys, not connected.');
+            return;
+        }
+
+        var toSend = '{"action": "'+ actionName + '"';
+        
+        if (args != null && Array.isArray(args)) {
+            for (var i = 0; i < args.length; i++) {
+                if (!Array.isArray(args[i]) || args[i].length != 2 || typeof args[i][0] != 'string') {
+                    continue;
+                }
+                
+                toSend += ', "' + args[i][0] + '": ';
+                if (typeof args[i][1] == 'string') {
+                    toSend += '"' + args[i][1] + '"';
+                } else {
+                    toSend += args[i][1];
+                }
+            }
+        }
+        toSend += '}';
+
+        console.log('Sending to XToys: ' + toSend);
+        xToysSocket.send(toSend);
+    }
+
+
 
 
 
@@ -106,11 +139,37 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             var activityName = BCXToysSearchMsgDictionary(data, 'ActivityName')?.Text;
             var activityAsset = BCXToysSearchMsgDictionary(data, 'ActivityAsset')?.Text;
             if (activityGroup != null && activityName != null) {
-                xToysSendActivityEvent(activityGroup, activityName, activityAsset);
+                xToysSendData('activityEvent', [['assetGroupName', activityGroup], ['actionName', activityName], ['assetName', activityAsset]]);
             }
         }
 
         // Vibration affecting player
+        if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
+            var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
+            if (assetName == null) { return; }
+
+            var level = -1;
+            switch (data.Content) {
+                case 'VibeDecreaseTo-1': level = 0; break;
+                case 'VibeDecreaseTo0':
+                case 'VibeIncreaseTo0': level = 1; break;
+                case 'VibeDecreaseTo1':
+                case 'VibeIncreaseTo1': level = 2; break;
+                case 'VibeDecreaseTo2':
+                case 'VibeIncreaseTo2': level = 3; break;
+                case 'VibeDecreaseTo3':
+                case 'VibeIncreaseTo3': level = 4; break;
+            }
+
+            var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
+
+            if (activityGroup != null && level >= 0) { 
+                xToysSendData('toyEvent', [['assetGroupName', activityGroup], ['level', level]]);
+            }
+        }
+
+        // Toy inflation events
+        /*
         if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
             var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
             if (assetName == null) { return; }
@@ -129,9 +188,11 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             if (activityGroup != null && level >= 0) { 
                 xToysSendToyEvent(activityGroup, level);
             }
+            
         }
+        */
 
-        //console.log(data);
+        console.log(data);
     });
 
     async function waitFor(func, cancelFunc = () => false) {
