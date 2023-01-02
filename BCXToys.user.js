@@ -80,7 +80,10 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
                 }
 
                 toSend += ', "' + args[i][0] + '": ';
-                if (typeof args[i][1] == 'string') {
+                if (args[i][1] == null) {
+                    toSend += '"none"';
+                }
+                else if (typeof args[i][1] == 'string') {
                     toSend += '"' + args[i][1] + '"';
                 } else {
                     toSend += args[i][1];

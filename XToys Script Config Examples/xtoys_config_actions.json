@@ -1,17 +1,58 @@
 [
     {
-        "Weight": 20,
+        "Weight": 40,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
-            "ItemVulva", "-BlacklistedSlot"
+            "ItemVulva"
         ],
         "Actions": [
-            "Caress", "-BlacklistedAction"
+            "Caress", "Kiss"
         ],
         "Items": [
-            "*", "-BlacklistedItem"
+            "*"
+        ]
+    },
+    {
+        "Weight": 80,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "Nibble", "Lick"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Weight": 100,
+        "DurationMS": 200,
+        "RampTimeMS": 50,
+        "Names": [
+            "*"
+        ],
+        "Actions": [
+            "Spank", "Slap", "Bite", "Pinch"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Weight": 10,
+        "DurationMS": 4000,
+        "RampTimeMS": 1000,
+        "Names": [
+            "*"
+        ],
+        "Actions": [
+            "Kiss", "Caress", "Massage", "Lick", "Cuddle", "Pet", "RestHead", "Rub", "Sit", "Grope"
+        ],
+        "Items": [
+            "*"
         ]
     }
 ]
-
