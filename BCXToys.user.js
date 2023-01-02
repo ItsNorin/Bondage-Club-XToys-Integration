@@ -71,14 +71,14 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             return;
         }
 
-        var toSend = '{"action": "'+ actionName + '"';
-        
+        var toSend = '{"action": "' + actionName + '"';
+
         if (args != null && Array.isArray(args)) {
             for (var i = 0; i < args.length; i++) {
                 if (!Array.isArray(args[i]) || args[i].length != 2 || typeof args[i][0] != 'string') {
                     continue;
                 }
-                
+
                 toSend += ', "' + args[i][0] + '": ';
                 if (typeof args[i][1] == 'string') {
                     toSend += '"' + args[i][1] + '"';
@@ -93,6 +93,54 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         xToysSocket.send(toSend);
     }
 
+    function getVibrationLevel(msgData) {
+        var level = -1;
+        switch (msgData.Content) {
+            case 'VibeDecreaseTo-1':
+            case 'ItemButtInflVibeButtPlugDecreaseToi0':
+                level = 0; break;
+            case 'VibeDecreaseTo0':
+            case 'VibeIncreaseTo0':
+            case 'ItemButtInflVibeButtPlugIncreaseToi1':
+            case 'ItemButtInflVibeButtPlugDecreaseToi1':
+                level = 1; break;
+            case 'VibeDecreaseTo1':
+            case 'VibeIncreaseTo1':
+            case 'ItemButtInflVibeButtPlugIncreaseToi2':
+            case 'ItemButtInflVibeButtPlugDecreaseToi2':
+                level = 2; break;
+            case 'VibeDecreaseTo2':
+            case 'VibeIncreaseTo2':
+            case 'ItemButtInflVibeButtPlugIncreaseToi3':
+            case 'ItemButtInflVibeButtPlugDecreaseToi3':
+                level = 3; break;
+            case 'VibeDecreaseTo3':
+            case 'VibeIncreaseTo3':
+            case 'ItemButtInflVibeButtPlugIncreaseToi4':
+                level = 4; break;
+        }
+        return level;
+    }
+
+    function getInflationLevel(msgData) {
+        var inflationLevel = -1;
+        switch (msgData.Content) {
+            case 'ItemButtInflVibeButtPlugDecreaseTof0':
+                inflationLevel = 0; break;
+            case 'ItemButtInflVibeButtPlugIncreaseTof1':
+            case 'ItemButtInflVibeButtPlugDecreaseTof1':
+                inflationLevel = 1; break;
+            case 'ItemButtInflVibeButtPlugIncreaseTof2':
+            case 'ItemButtInflVibeButtPlugDecreaseTof2':
+                inflationLevel = 2; break;
+            case 'ItemButtInflVibeButtPlugIncreaseTof3':
+            case 'ItemButtInflVibeButtPlugDecreaseTof3':
+                inflationLevel = 3; break;
+            case 'ItemButtInflVibeButtPlugIncreaseTof4':
+                inflationLevel = 4; break;
+        }
+        return inflationLevel;
+    }
 
     // On every chat room message, check what should be sent to xtoys
     ServerSocket.on("ChatRoomMessage", async (data) => {
@@ -100,7 +148,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             || data.Content == null
             || BCXToysIgnoreMsgContents.has(data.Content)
             || data.Type == null
-           // || BCXToysIgnoreMsgTypes.has(data.Type)
+            || BCXToysIgnoreMsgTypes.has(data.Type)
         ) {
             return;
         }
@@ -115,74 +163,25 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             }
         }
 
-        // Vibration affecting player
+        // Toys affecting player
         if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
             var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
             if (assetName == null) { return; }
 
-            var level = -1;
-            switch (data.Content) {
-                case 'VibeDecreaseTo-1':
-                case 'ItemButtInflVibeButtPlugDecreaseToi0':
-                     level = 0; break;
-                case 'VibeDecreaseTo0':
-                case 'VibeIncreaseTo0': 
-                case 'ItemButtInflVibeButtPlugIncreaseToi1':
-                case 'ItemButtInflVibeButtPlugDecreaseToi1':
-                    level = 1; break;
-                case 'VibeDecreaseTo1':
-                case 'VibeIncreaseTo1': 
-                case 'ItemButtInflVibeButtPlugIncreaseToi2':
-                case 'ItemButtInflVibeButtPlugDecreaseToi2':
-                    level = 2; break;
-                case 'VibeDecreaseTo2':
-                case 'VibeIncreaseTo2': 
-                case 'ItemButtInflVibeButtPlugIncreaseToi3':
-                case 'ItemButtInflVibeButtPlugDecreaseToi3':
-                    level = 3; break;
-                case 'VibeDecreaseTo3':
-                case 'VibeIncreaseTo3': 
-                case 'ItemButtInflVibeButtPlugIncreaseToi4':
-                    level = 4; break;
-            }
-
             var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
+            if (activityGroup == null) { return; }
 
-            if (activityGroup != null && level >= 0) { 
+            var level = getVibrationLevel(data);
+            if (level >= 0) {
                 xToysSendData('toyEvent', [['assetGroupName', activityGroup], ['level', level]]);
             }
+
+            var inflationLevel = getInflationLevel(data);
+            if (inflationLevel >= 0) {
+                xToysSendData('inflationEvent', [['assetGroupName', activityGroup], ['level', inflationLevel]]);
+            }
         }
 
-        // Toy inflation events
-        if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
-            var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
-            if (assetName == null) { return; }
-
-            var level = -1;
-            switch (data.Content) {
-                case 'ItemButtInflVibeButtPlugDecreaseTof0': 
-                    level = 0; break;
-                case 'ItemButtInflVibeButtPlugIncreaseTof1': 
-                case 'ItemButtInflVibeButtPlugDecreaseTof1':
-                    level = 1; break;
-                case 'ItemButtInflVibeButtPlugIncreaseTof2': 
-                case 'ItemButtInflVibeButtPlugDecreaseTof2':
-                    level = 2; break;
-                case 'ItemButtInflVibeButtPlugIncreaseTof3': 
-                case 'ItemButtInflVibeButtPlugDecreaseTof3':
-                    level = 3; break;
-                case 'ItemButtInflVibeButtPlugIncreaseTof4': 
-                    level = 4; break;
-            }
-
-            var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
-
-            if (activityGroup != null && level >= 0) { 
-                xToysSendData('inflationEvent', [['assetGroupName', activityGroup], ['level', level]]);
-            }
-            
-        }
-        
         console.log(data);
     });
 
