@@ -200,7 +200,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             }
         }
 
-        console.log(data);
+        //console.log(data);
     });
 
     async function waitFor(func, cancelFunc = () => false) {
