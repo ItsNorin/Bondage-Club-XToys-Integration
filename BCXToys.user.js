@@ -142,6 +142,19 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         return inflationLevel;
     }
 
+    function getShockLevel(msgData) {
+        var level = -1;
+        switch (msgData.Content) {
+            case 'TriggerShock0':
+                level = 0; break;
+            case 'TriggerShock1':
+                level = 1; break;
+            case 'TriggerShock2':
+                level = 2; break;
+        }
+        return level;
+    }
+
     // On every chat room message, check what should be sent to xtoys
     ServerSocket.on("ChatRoomMessage", async (data) => {
         if (data == null
@@ -179,6 +192,11 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             var inflationLevel = getInflationLevel(data);
             if (inflationLevel >= 0) {
                 xToysSendData('inflationEvent', [['assetGroupName', activityGroup], ['level', inflationLevel]]);
+            }
+
+            var shockLevel = getShockLevel(data);
+            if (shockLevel >= 0) {
+                xToysSendData('shockEvent', [['assetGroupName', activityGroup], ['level', shockLevel]]);
             }
         }
 
