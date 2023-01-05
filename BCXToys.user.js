@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Bondage Club XToys Integration
 // @namespace https://www.bondageprojects.com/
-// @version 0.2
+// @version 0.3
 // @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
 // @author ItsNorin
 // @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
@@ -14,7 +14,7 @@
 // @grant none
 // ==/UserScript==
 
-const BCXToys_Version = "0.2";
+const BCXToys_Version = "0.3";
 
 const BCXToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
@@ -63,7 +63,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     };
 
     // sends any amount of arguements to XToys Websocket
-    // actionName - string 
+    // actionName - string
     // args - array of [string, any type]
     function xToysSendData(actionName, args = null) {
         if (!xToysConnected) {
@@ -179,8 +179,29 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             }
         }
 
+
+        if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacter')?.MemberNumber === Player.MemberNumber) {
+            // Toy equip
+            if (data.Content == 'ActionUse') {
+                var itemUsedInSlot = BCXToysSearchMsgDictionary(data,'FocusAssetGroup')?.AssetGroupName;
+                //console.log('Added: ' + itemUsedInSlot);
+                if (itemUsedInSlot != null) {
+                    xToysSendData('itemAdded',[['assetGroupName', itemUsedInSlot]]);
+                }
+            }
+
+            // Toy removal
+            if (data.Content == 'ActionRemove') {
+                var itemUsedInSlot = BCXToysSearchMsgDictionary(data,'FocusAssetGroup')?.AssetGroupName;
+                //console.log('Removed: ' + itemUsedInSlot);
+                if (itemUsedInSlot != null) {
+                    xToysSendData('itemRemoved',[['assetGroupName', itemUsedInSlot]]);
+                }
+            }
+        }
         // Toys affecting player
         if (data.Type == 'Action' && BCXToysSearchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber === Player.MemberNumber) {
+            // Toy actions
             var assetName = BCXToysSearchMsgDictionary(data, 'AssetName')?.AssetName;
             if (assetName == null) { return; }
 
