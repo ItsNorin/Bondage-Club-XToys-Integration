@@ -1,20 +1,20 @@
 [
     {
-        "Weight": 40,
+        "Weight": 30,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
-            "ItemVulva"
+            "ItemVulva", "ItemButt", "ItemVulvaPiercings", "ItemBreast", "ItemNipples" 
         ],
         "Actions": [
-            "Caress", "Kiss"
+            "Caress", "Kiss", "Grope", "Pull"
         ],
         "Items": [
             "*"
         ]
     },
     {
-        "Weight": 80,
+        "Weight": 60,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
@@ -28,6 +28,34 @@
         ]
     },
     {
+        "Weight": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "RubItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
+        "Weight": 60,
+        "DurationMS": 20000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "MasturbateItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
         "Weight": 100,
         "DurationMS": 200,
         "RampTimeMS": 50,
@@ -35,14 +63,15 @@
             "*"
         ],
         "Actions": [
-            "Spank", "Slap", "Bite", "Pinch"
+            "Spank", "Slap", "Bite", "Pinch", 
+            "SpankItem", "ShockItem"
         ],
         "Items": [
             "*"
         ]
     },
     {
-        "Weight": 10,
+        "Weight": 5,
         "DurationMS": 4000,
         "RampTimeMS": 1000,
         "Names": [

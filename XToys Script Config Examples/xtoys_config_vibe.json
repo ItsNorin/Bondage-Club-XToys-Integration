@@ -2,16 +2,11 @@
     {
         "Name": "ItemVulva",
         "Weight": 100,
-        "RampTimeMS" : 2000
-    },
-    {
-        "Name": "ItemVulvaPiercings",
-        "Weight": 100,
-        "RampTimeMS" : 2000
+        "RampTimeMS" : 3000
     },
     {
         "Name": "ItemButt",
-        "Weight": 50,
-        "RampTimeMS" : 2000
+        "Weight": 100,
+        "RampTimeMS" : 3000
     }
 ]
