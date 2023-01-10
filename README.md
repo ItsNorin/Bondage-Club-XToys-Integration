@@ -11,3 +11,6 @@ This is still in development and may not even work. If you want to try to use it
 This script will be published on XToys once the code is in a more finalized state lol
 3. Open Bondage club site, copy the Webhook ID from the XToys script into the prompt that should pop up.
 4. Modify script's config JSON to your liking, see contents of XToys Script Config Exmples.
+
+## For Support: Discord Link
+https://discord.gg/2VxqbbrUW8
