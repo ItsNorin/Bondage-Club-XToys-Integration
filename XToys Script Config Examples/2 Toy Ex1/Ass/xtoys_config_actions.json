@@ -73,5 +73,20 @@
         "Items": [
             "*"
         ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 100,
+        "DurationMS": 400,
+        "RampTimeMS": 100,
+        "Names": [
+            "*" 
+        ],
+        "Actions": [
+            "Slap", "Pinch", "Spank"
+        ],
+        "Items": [
+            "*"
+        ]
     }
 ]
