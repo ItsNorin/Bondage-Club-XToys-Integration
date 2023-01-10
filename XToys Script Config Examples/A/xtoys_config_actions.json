@@ -1,0 +1,92 @@
+[
+    {
+        "Type": "OnOther",
+        "Weight": 5,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "*" 
+        ],
+        "Actions": [
+            "Caress", "Kiss", "Grope", "Pet"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings" 
+        ],
+        "Actions": [
+            "Caress", "Kiss", "Grope", "Pull"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 60,
+        "DurationMS": 15000,
+        "RampTimeMS": 3000,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "Nibble", "Lick"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 2000,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "RubItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 60,
+        "DurationMS": 20000,
+        "RampTimeMS": 3000,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings"
+        ],
+        "Actions": [
+            "MasturbateItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Weight": 5,
+        "DurationMS": 4000,
+        "RampTimeMS": 1000,
+        "Names": [
+            "*"
+        ],
+        "Actions": [
+            "Kiss", "Caress", "Massage", "Lick", "Cuddle", "Pet", "RestHead", "Rub", "Sit", "Grope"
+        ],
+        "Items": [
+            "*"
+        ]
+    }
+]

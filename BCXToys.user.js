@@ -172,6 +172,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         }
     }
 
+    
     // On every chat room message, check what should be sent to xtoys
     ServerSocket.on("ChatRoomMessage", async (data) => {
         if (data == null

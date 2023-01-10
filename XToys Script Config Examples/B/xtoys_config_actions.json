@@ -1,24 +1,26 @@
 [
     {
-        "Weight": 30,
+        "Type": "OnSelf",
+        "Weight": 20,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
-            "ItemVulva", "ItemButt", "ItemVulvaPiercings", "ItemBreast", "ItemNipples" 
+            "ItemButt"
         ],
         "Actions": [
-            "Caress", "Kiss", "Grope", "Pull"
+            "Caress", "Kiss", "Grope"
         ],
         "Items": [
             "*"
         ]
     },
     {
+        "Type": "OnSelf",
         "Weight": 60,
-        "DurationMS": 10000,
-        "RampTimeMS": 2000,
+        "DurationMS": 15000,
+        "RampTimeMS": 3000,
         "Names": [
-            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+            "ItemButt"
         ],
         "Actions": [
             "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "Nibble", "Lick"
@@ -28,11 +30,12 @@
         ]
     },
     {
+        "Type": "OnSelf",
         "Weight": 30,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
-            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+            "ItemButt"
         ],
         "Actions": [
             "RubItem"
@@ -42,11 +45,12 @@
         ]
     },
     {
+        "Type": "OnSelf",
         "Weight": 60,
         "DurationMS": 20000,
-        "RampTimeMS": 2000,
+        "RampTimeMS": 3000,
         "Names": [
-            "ItemVulva", "ItemButt", "ItemVulvaPiercings"
+            "ItemButt"
         ],
         "Actions": [
             "MasturbateItem"
@@ -56,21 +60,7 @@
         ]
     },
     {
-        "Weight": 100,
-        "DurationMS": 200,
-        "RampTimeMS": 50,
-        "Names": [
-            "*"
-        ],
-        "Actions": [
-            "Spank", "Slap", "Bite", "Pinch", 
-            "SpankItem", "ShockItem"
-        ],
-        "Items": [
-            "*"
-        ]
-    },
-    {
+        "Type": "OnSelf",
         "Weight": 5,
         "DurationMS": 4000,
         "RampTimeMS": 1000,
