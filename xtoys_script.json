@@ -387,7 +387,7 @@
       "id": "config_vibes",
       "name": "Config Toy Events JSON",
       "type": "textarea",
-      "value": "[\n    {\n        \"Name\": \"ItemVulva\",\n        \"Weight\": 100\n    },\n    {\n        \"Name\": \"ItemVulvaPiercings\",\n        \"Weight\": 10\n    },\n    {\n        \"Name\": \"ItemButt\",\n        \"Weight\": 10\n    },\n    {\n        \"Name\": \"ItemNipples\",\n        \"Weight\": 5\n    },\n    {\n        \"Name\": \"ItemNipplePiercings\",\n        \"Weight\": 5\n    }\n]",
+      "value": "[]",
       "description": "Configuration for what in game toys this script should react to, must be in JSON format. Recommend VSCode or similar to edit."
     },
     {
@@ -401,7 +401,7 @@
       "id": "config_activity",
       "name": "Config Actions JSON",
       "type": "textarea",
-      "value": "[\n    {\n        \"Name\": \"ItemVulva\",\n        \"Action\": \"Caress\",\n        \"Weight\": 10,\n        \"DurationMS\": 1000\n    },\n    {\n        \"Name\": \"ItemVulva\",\n        \"Action\": \"Slap\",\n        \"Weight\": 30,\n        \"DurationMS\": 100\n    },\n    {\n        \"Name\": \"ItemVulva\",\n        \"Action\": \"MasturbateHand\",\n        \"Weight\": 20,\n        \"DurationMS\": 2000\n    }\n]",
+      "value": "[]",
       "description": "Configuration for what in game actions this script should react to, must be in JSON format. Recommend VSCode or similar to edit."
     }
   ],
