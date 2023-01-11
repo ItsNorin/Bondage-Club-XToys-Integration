@@ -1,7 +1,7 @@
 [
     {
         "Type": "OnSelf",
-        "Weight": 20,
+        "Intensity": 20,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
@@ -16,7 +16,7 @@
     },
     {
         "Type": "OnSelf",
-        "Weight": 60,
+        "Intensity": 60,
         "DurationMS": 15000,
         "RampTimeMS": 3000,
         "Names": [
@@ -31,7 +31,7 @@
     },
     {
         "Type": "OnSelf",
-        "Weight": 30,
+        "Intensity": 30,
         "DurationMS": 10000,
         "RampTimeMS": 2000,
         "Names": [
@@ -46,7 +46,7 @@
     },
     {
         "Type": "OnSelf",
-        "Weight": 60,
+        "Intensity": 60,
         "DurationMS": 20000,
         "RampTimeMS": 3000,
         "Names": [
@@ -61,7 +61,7 @@
     },
     {
         "Type": "OnSelf",
-        "Weight": 5,
+        "Intensity": 5,
         "DurationMS": 4000,
         "RampTimeMS": 1000,
         "Names": [
@@ -69,21 +69,6 @@
         ],
         "Actions": [
             "Kiss", "Caress", "Massage", "Lick", "Cuddle", "Pet", "RestHead", "Rub", "Sit", "Grope"
-        ],
-        "Items": [
-            "*"
-        ]
-    },
-    {
-        "Type": "OnSelf",
-        "Weight": 100,
-        "DurationMS": 400,
-        "RampTimeMS": 100,
-        "Names": [
-            "*" 
-        ],
-        "Actions": [
-            "Slap", "Pinch", "Spank"
         ],
         "Items": [
             "*"

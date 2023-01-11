@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Bondage Club XToys Integration
 // @namespace https://www.bondageprojects.com/
-// @version 0.3
+// @version 0.4
 // @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
 // @author ItsNorin
 // @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
@@ -14,7 +14,7 @@
 // @grant none
 // ==/UserScript==
 
-const BCXToys_Version = "0.3";
+const BCXToys_Version = "0.4";
 
 var BCXToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
