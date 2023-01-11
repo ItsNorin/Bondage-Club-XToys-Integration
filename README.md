@@ -1,6 +1,9 @@
 # Bondage Club XToys Integration
 Made for controlling irl toys  based on your in game character's worn toys, as well as interactions with other players inside chat rooms.
 
+### Find me online for help or to see updates, report issues, mention any improvements you'd want, or just chat:
+https://discord.gg/2VxqbbrUW8
+
 ## Usage
 1. Install Tampermonkey extension, add BCXToys.user.js as a userscript.
 2. Go to https://xtoys.app/scripts/-NKBBRsS_zPuUags3DNb and press "Load Script".
@@ -36,6 +39,3 @@ Items      | An array of held items that will work. Use * to match with any item
 
 ## Notes & Support
 This is still in development and may not even work. If you want to try to use it now, be prepared to figure some things out lmao
-
-### Find me online for help, to report issues, or whatever:
-https://discord.gg/2VxqbbrUW8
