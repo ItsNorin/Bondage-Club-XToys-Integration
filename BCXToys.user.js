@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name Bondage Club XToys Integration
 // @namespace https://www.bondageprojects.com/
-// @version 0.4
+// @version 0.5
 // @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
 // @author ItsNorin
 // @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
@@ -14,7 +14,7 @@
 // @grant none
 // ==/UserScript==
 
-const BCXToys_Version = "0.4";
+const BCXToys_Version = "0.5";
 
 var BCXToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
@@ -94,14 +94,18 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     function handleActivities(data) {
         if (data.Type != 'Activity') { return; }
 
-        var activityGroup = searchMsgDictionary(data, 'ActivityGroup')?.Text;
-        var activityName = searchMsgDictionary(data, 'ActivityName')?.Text;
-        var activityAsset = searchMsgDictionary(data, 'ActivityAsset')?.Text;
+        var activityGroup = searchMsgDictionary(data, 'FocusGroupName');
+        var activityName = searchMsgDictionary(data, 'ActivityName');
+        var activityAsset = searchMsgDictionary(data, 'ActivityAsset', 'AssetName');
+        var targetChar = searchMsgDictionary(data, 'TargetCharacter', 'MemberNumber');
+        var sourceChar = searchMsgDictionary(data, 'SourceCharacter', 'MemberNumber');
+
+        //console.log(activityGroup + ' ' + activityName + ' ' + activityAsset + ' on ' + targetChar + ' by ' + sourceChar);
 
         if (activityGroup == null || activityName == null) { return; }
 
         // activity on self
-        if (searchMsgDictionary(data, 'TargetCharacter')?.MemberNumber === Player.MemberNumber) {
+        if (targetChar == Player.MemberNumber) {
             xToysSendData('activityEvent', [
                 ['assetGroupName', activityGroup],
                 ['actionName', activityName],
@@ -109,7 +113,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
             ]);
         }
         // activity on others by self
-        else if (searchMsgDictionary(data, 'SourceCharacter')?.MemberNumber === Player.MemberNumber) {
+        else if (sourceChar == Player.MemberNumber) {
             xToysSendData('activityOnOtherEvent', [
                 ['assetGroupName', activityGroup],
                 ['actionName', activityName],
@@ -120,8 +124,8 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
     // Toys/items equipped or removed on player
     function handleItemEquip(data) {
-        if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter')?.MemberNumber != Player.MemberNumber) { return; }
-        var itemUsedInSlot = searchMsgDictionary(data, 'FocusAssetGroup')?.AssetGroupName;
+        if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber) { return; }
+        var itemUsedInSlot = searchMsgDictionary(data, 'FocusAssetGroup', 'AssetGroupName');
         if (itemUsedInSlot == null) { return; }
 
         // Toy equip
@@ -138,11 +142,11 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
     // Toys affecting player
     function handleToyEvents(data) {
-        if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacterName')?.MemberNumber != Player.MemberNumber) {
+        if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacterName', 'MemberNumber') != Player.MemberNumber) {
             return;
         }
 
-        var assetName = searchMsgDictionary(data, 'AssetName')?.AssetName;
+        var assetName = searchMsgDictionary(data, 'AssetName', 'AssetName');
         var activityGroup = Player.Appearance.find((d) => d.Asset.Name == assetName)?.Asset?.Group?.Name;
 
         if (activityGroup == null || assetName == null) { return; }
@@ -172,7 +176,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         }
     }
 
-    
+
     // On every chat room message, check what should be sent to xtoys
     ServerSocket.on("ChatRoomMessage", async (data) => {
         if (data == null
@@ -183,12 +187,12 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         ) {
             return;
         }
+        
+        //console.log(data);
 
         handleActivities(data);
         handleItemEquip(data);
         handleToyEvents(data);
-
-        //console.log(data);
     });
 
     async function waitFor(func, cancelFunc = () => false) {
@@ -204,9 +208,29 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     }
 
     // searches a message for the given key, returns its value
-    function searchMsgDictionary(msg, key) {
-        if (msg != null && Array.isArray(msg.Dictionary)) {
-            return msg.Dictionary.find((d) => d.Tag == key);
+    function searchMsgDictionary(msg, tag, subKey = null) {
+        //var attempt1 =  msg.Dictionary.find((d) => d.Tag == key);
+        if (msg == null || !Array.isArray(msg.Dictionary)) {
+            return null;
+        }
+
+        for (var i = 0; i < msg.Dictionary.length; i++) {
+            var dictKeys = Object.keys(msg.Dictionary[i]);
+            var dictValues = Object.values(msg.Dictionary[i]);
+
+            // new style
+            // {FocusGroupName: 'ItemArms'}
+            if (dictKeys[0] == tag) {
+                return dictValues[0];
+            }
+
+            // old style
+            // {Tag: 'ActivityAsset', AssetName: 'Feather', GroupName: 'ItemHandheld'}
+            // {Tag: 'SourceCharacter', Text: '', MemberNumber: }
+            var subKeyIndex = dictKeys.indexOf(subKey);
+            if (dictKeys[0] == 'Tag' && dictValues[0] == tag && subKeyIndex >= 0) {
+                return dictValues[subKeyIndex];
+            }
         }
         return null;
     }
@@ -240,7 +264,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         }
         return level;
     }
-    
+
     function getInflationLevel(msgData) {
         var inflationLevel = -1;
         switch (msgData.Content) {
@@ -260,7 +284,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         }
         return inflationLevel;
     }
-    
+
     function getShockLevel(msgData) {
         var level = -1;
         switch (msgData.Content) {
