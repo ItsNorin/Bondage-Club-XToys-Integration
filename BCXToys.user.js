@@ -241,25 +241,33 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
         switch (msgData.Content) {
             case 'VibeDecreaseTo-1':
             case 'ItemButtInflVibeButtPlugDecreaseToi0':
+            case 'ItemPelvisSciFiPleasurePantiesSetDecreasei0':
                 level = 0; break;
             case 'VibeDecreaseTo0':
             case 'VibeIncreaseTo0':
             case 'ItemButtInflVibeButtPlugIncreaseToi1':
             case 'ItemButtInflVibeButtPlugDecreaseToi1':
+            case 'ItemPelvisSciFiPleasurePantiesSetIncreasei1':
+            case 'ItemPelvisSciFiPleasurePantiesSetDecreasei1':
                 level = 1; break;
             case 'VibeDecreaseTo1':
             case 'VibeIncreaseTo1':
             case 'ItemButtInflVibeButtPlugIncreaseToi2':
             case 'ItemButtInflVibeButtPlugDecreaseToi2':
+            case 'ItemPelvisSciFiPleasurePantiesSetIncreasei2':
+            case 'ItemPelvisSciFiPleasurePantiesSetDecreasei2':
                 level = 2; break;
             case 'VibeDecreaseTo2':
             case 'VibeIncreaseTo2':
             case 'ItemButtInflVibeButtPlugIncreaseToi3':
             case 'ItemButtInflVibeButtPlugDecreaseToi3':
+            case 'ItemPelvisSciFiPleasurePantiesSetIncreasei3':
+            case 'ItemPelvisSciFiPleasurePantiesSetDecreasei3':
                 level = 3; break;
             case 'VibeDecreaseTo3':
             case 'VibeIncreaseTo3':
             case 'ItemButtInflVibeButtPlugIncreaseToi4':
+            case 'ItemPelvisSciFiPleasurePantiesSetIncreasei4':
                 level = 4; break;
         }
         return level;
