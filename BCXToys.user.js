@@ -1,17 +1,17 @@
 // ==UserScript==
-// @name Bondage Club XToys Integration
-// @namespace https://www.bondageprojects.com/
-// @version 0.5
-// @description Sends in game actions and toy activity to an XToys script. Based on work by Fro.
-// @author ItsNorin
-// @homepageURL https://github.com/ItsNorin/Bondage-Club-XToys-Integration
-// @match https://bondageprojects.elementfx.com/*
-// @match https://www.bondageprojects.elementfx.com/*
-// @match https://bondage-europe.com/*
-// @match https://www.bondage-europe.com/*
-// @match http://localhost:*/*
-// @run-at document-end
-// @grant none
+// @name         Bondage Club XToys Integration
+// @namespace    BCXToys
+// @version      0.5
+// @description  Sends in game actions and toy activity to XToys.
+// @author       ItsNorin
+// @match        https://bondageprojects.elementfx.com/*
+// @match        https://www.bondageprojects.elementfx.com/*
+// @match        https://bondage-europe.com/*
+// @match        https://www.bondage-europe.com/*
+// @match        http://localhost:*/*
+// @homepage     https://github.com/ItsNorin/Bondage-Club-XToys-Integration
+// @run-at       document-end
+// @grant        none
 // ==/UserScript==
 
 const BCXToys_Version = "0.5";

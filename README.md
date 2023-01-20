@@ -5,7 +5,7 @@ Made for controlling irl toys  based on your in game character's worn toys, as w
 https://discord.gg/2VxqbbrUW8
 
 ## Usage
-1. Install Tampermonkey extension, add BCXToys.user.js as a userscript.
+1. Install Tampermonkey extension, add https://itsnorin.github.io/BCXToys/BCXToysLoader.user.js as a userscript. Alternatively to not have auto updates, add https://itsnorin.github.io/BCXToys/BCXToys.user.js
 2. Go to https://xtoys.app/scripts/-NKBBRsS_zPuUags3DNb and press "Load Script".
 3. Open Bondage club site, copy the Webhook ID from the XToys script into the prompt that should pop up.
 4. Modify script's config JSON to your liking, see contents of XToys Script Config Exmples.
