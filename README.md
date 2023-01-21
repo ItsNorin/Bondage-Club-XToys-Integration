@@ -2,13 +2,15 @@
 
 Made for controlling irl toys  based on your in game character's worn toys, as well as interactions with other players inside chat rooms.
 
+#### [Github Repo](https://github.com/ItsNorin/Bondage-Club-XToys-Integration)
+
 ### Find me online for help or to see updates, report issues, mention any improvements you'd want, or just chat:
 
 [discord.gg/2VxqbbrUW8](https://discord.gg/2VxqbbrUW8)
 
 ## Usage
 
-1. Install the Tampermonkey extension, add [itsnorin.github.io/BCXToys/BCXToysLoader.user.js](https://itsnorin.github.io/BCXToys/BCXToysLoader.user.js) as a userscript. Alternatively if you just want the latest version without auto updates, add [itsnorin.github.io/BCXToys/BCXToys.user.js](https://itsnorin.github.io/BCXToys/BCXToys.user.js)
+1. Install the Tampermonkey extension, add [itsnorin.github.io/BC-XToys/BC-XToysLoader.user.js](https://itsnorin.github.io/BCXToys/BCXToysLoader.user.js) as a userscript. Alternatively if you just want the latest version without auto updates, add [itsnorin.github.io/BC-XToys/BC-XToys.user.js](https://itsnorin.github.io/BCXToys/BCXToys.user.js)
 2. Go to [xtoys.app/scripts/-NKBBRsS_zPuUags3DNb](https://xtoys.app/scripts/-NKBBRsS_zPuUags3DNb) and press "Load Script". Press the little green arrow in the corner to start the script, connect a toy using the plug symbol. 
 3. Copy the Webhook ID from the XToys script, open the Bondage Club site, and paste the Webhook ID into the prompt that should pop up.
 4. Modify the script's config JSON to your liking, see contents of [XToys Script Config Exmples](https://github.com/ItsNorin/Bondage-Club-XToys-Integration/tree/main/XToys%20Script%20Config%20Examples). You can have as many instances of the script as you like, with different configs for each of them, connected to multiple toys.

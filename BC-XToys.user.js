@@ -1,6 +1,6 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
-// @namespace    BCXToys
+// @namespace    BC-XToys
 // @version      0.5
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
@@ -14,13 +14,13 @@
 // @grant        none
 // ==/UserScript==
 
-const BCXToys_Version = "0.5";
+const BC_XToys_Version = "0.5";
 
-var BCXToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
+var BC_XToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
-var BCXToysIgnoreMsgTypes = new Set(['Status', 'Hidden']);
+var BC_XToysIgnoreMsgTypes = new Set(['Status', 'Hidden']);
 
-function BCXToysGetXToysIDFromUser() {
+function BC_XToysGetXToysIDFromUser() {
     return prompt('Enter your XToys Private Webhook ID\nAvailable under your User Info, under Private Webhook.');
 }
 
@@ -28,16 +28,16 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
 (async function () {
     const modApi = bcModSdk.registerMod({
-        name: 'BCXToys',
+        name: 'BC-XToys',
         fullName: 'Bondage Club XToys Integration',
-        version: BCXToys_Version,
+        version: BC_XToys_Version,
         repository: 'https://github.com/ItsNorin/Bondage-Club-XToys-Integration',
     });
 
     await waitFor(() => ServerIsConnected && ServerSocket);
 
     // get webhook id and create connection
-    const xToysSocket = new WebSocket('wss://webhook.xtoys.app/' + BCXToysGetXToysIDFromUser());
+    const xToysSocket = new WebSocket('wss://webhook.xtoys.app/' + BC_XToysGetXToysIDFromUser());
     var xToysConnected = false;
 
     xToysSocket.onopen = function (e) {
@@ -181,9 +181,9 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     ServerSocket.on("ChatRoomMessage", async (data) => {
         if (data == null
             || data.Content == null
-            || BCXToysIgnoreMsgContents.has(data.Content)
+            || BC_XToysIgnoreMsgContents.has(data.Content)
             || data.Type == null
-            || BCXToysIgnoreMsgTypes.has(data.Type)
+            || BC_XToysIgnoreMsgTypes.has(data.Type)
         ) {
             return;
         }

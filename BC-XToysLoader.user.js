@@ -10,7 +10,7 @@
 // @match        https://www.bondage-europe.com/*
 // @match        http://localhost:*/*
 // @homepage     https://github.com/ItsNorin/Bondage-Club-XToys-Integration
-// @downloadURL  https://itsnorin.github.io/BCXToys/BCXToysLoader.user.js
+// @downloadURL  https://itsnorin.github.io/BC-XToys/BC-XToysLoader.user.js
 // @run-at       document-end
 // @grant        none
 // ==/UserScript==
@@ -21,7 +21,7 @@ setTimeout(
         const n = document.createElement("script");
         n.language = "JavaScript";
         n.crossorigin = "anonymous";
-        n.src = "https://itsnorin.github.io/BCXToys/BCXToys.user.js";
+        n.src = "https://itsnorin.github.io/BC-XToys/BC-XToys.user.js";
         document.head.appendChild(n);
     },
     2000,

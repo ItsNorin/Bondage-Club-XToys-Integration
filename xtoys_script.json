@@ -233,8 +233,7 @@
               "action": "setVolume",
               "channel": "generic-1-a",
               "rampTime": "{rampTimeMS}/1000",
-              "percentVolume": "{outputIntensity}+1",
-              "parsedRampTime": 2
+              "percentVolume": "{outputIntensity}"
             },
             {
               "job": "Output",
@@ -282,8 +281,7 @@
                   "resultVar": "result",
                   "storeResult": false
                 }
-              ],
-              "parsedAmount": 10
+              ]
             }
           ]
         }
