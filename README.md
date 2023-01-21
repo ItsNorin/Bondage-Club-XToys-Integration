@@ -12,6 +12,7 @@ Made for controlling irl toys  based on your in game character's worn toys, as w
 2. Go to [xtoys.app/scripts/-NKBBRsS_zPuUags3DNb](https://xtoys.app/scripts/-NKBBRsS_zPuUags3DNb) and press "Load Script".
 3. Copy the Webhook ID from the XToys script, open the Bondage Club site, and paste the Webhook ID into the prompt that should pop up.
 4. Modify the script's config JSON to your liking, see contents of [XToys Script Config Exmples](https://github.com/ItsNorin/Bondage-Club-XToys-Integration/tree/main/XToys%20Script%20Config%20Examples).
+5. Join any online room, Tampermonkey script can only grab events to send if you're in one.
 
 ## Config Overview
 
