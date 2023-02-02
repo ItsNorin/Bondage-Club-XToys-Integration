@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5
+// @version      0.5.1
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5";
+const BC_XToys_Version = "0.5.1";
 
 var BC_XToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'ServerEnter', 'ServerLeave', 'Wardrobe', 'SlowLeaveAttempt',
     'ServerUpdateRoom', 'bctMsg']);
@@ -125,18 +125,43 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
     // Toys/items equipped or removed on player
     function handleItemEquip(data) {
         if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber) { return; }
-        var itemUsedInSlot = searchMsgDictionary(data, 'FocusAssetGroup', 'AssetGroupName');
-        if (itemUsedInSlot == null) { return; }
+        var itemSlotName = searchMsgDictionary(data, 'FocusAssetGroup', 'AssetGroupName');
+        if (itemSlotName == null) { return; }
 
         // Toy equip
         if (data.Content == 'ActionUse') {
-            //console.log('Added: ' + itemUsedInSlot);
-            xToysSendData('itemAdded', [['assetGroupName', itemUsedInSlot]]);
+            //console.log('Added: ' + itemSlotName);
+            var itemName = searchMsgDictionary(data, 'NextAsset', 'AssetName');
+            if (itemName == null) { return; };
+
+            xToysSendData('itemAdded', [
+                ['assetName', itemName],
+                ['assetGroupName', itemSlotName]
+            ]);
         }
         // Toy removal
         else if (data.Content == 'ActionRemove') {
-            //console.log('Removed: ' + itemUsedInSlot);
-            xToysSendData('itemRemoved', [['assetGroupName', itemUsedInSlot]]);
+            //console.log('Removed: ' + itemSlotName);
+            var itemName = searchMsgDictionary(data, 'PrevAsset', 'AssetName');
+            if (itemName == null) { return; };
+
+            xToysSendData('itemRemoved', [
+                ['assetName', itemName],
+                ['assetGroupName', itemSlotName]
+            ]);
+        }
+        // Toy swaps
+        else if (data.Content == 'ActionSwap') {
+            //console.log('Swapped: ' + itemSlotName);
+            var itemName = searchMsgDictionary(data, 'NextAsset', 'AssetName');
+            var prevItemName = searchMsgDictionary(data, 'PrevAsset', 'AssetName');
+            if (itemName == null || prevItemName == null) { return; };
+
+            xToysSendData('itemSwapped', [
+                ['assetName', itemName],
+                ['prevAssetName', prevItemName],
+                ['assetGroupName', itemSlotName]
+            ]);
         }
     }
 
