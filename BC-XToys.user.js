@@ -54,6 +54,8 @@ var BC_XToys_ToyStates =  {
 
     clearSlot(slotName) {
         var t = this.states.get(slotName);
+        if (t == null) { return; }
+        
         for (let k of t.keys()) {
             t.delete(k);
         }
@@ -237,7 +239,7 @@ var BC_XToys_ToyStates =  {
 
         if (inflationLevel == null || activityGroup == null) { return; }
 
-        sendItemInfoIfDifferent(activityGroup, 'Inflation', intensity, 'inflationEvent');
+        sendItemInfoIfDifferent(activityGroup, 'Inflation', inflationLevel, 'inflationEvent');
     }
 
     function updateAllOngoingItemDetails(appearanceItem) {
@@ -246,8 +248,12 @@ var BC_XToys_ToyStates =  {
     }
 
     function clearAllOngoingItemDetails(slot) {
-        sendItemInfoIfDifferent(slot, 'Vibration', 0, 'toyEvent');
-        sendItemInfoIfDifferent(slot, 'Inflation', 0, 'inflationEvent');
+        if (BC_XToys_ToyStates.getState(slot, 'Vibration') != null) {
+            sendItemInfoIfDifferent(slot, 'Vibration', 0, 'toyEvent');
+        }
+        if (BC_XToys_ToyStates.getState(slot, 'Inflation') != null) {
+            sendItemInfoIfDifferent(slot, 'Inflation', 0, 'inflationEvent');
+        }
         BC_XToys_ToyStates.clearSlot(slot);
     }
 
