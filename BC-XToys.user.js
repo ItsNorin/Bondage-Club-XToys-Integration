@@ -367,7 +367,7 @@ var BC_XToys_ToyStates =  {
             }
         },
         {
-            Tag: "xtoysconnections",
+            Tag: "xtoyssockets",
             Description: "Shows all XToys connections",
             Action: () => {
                 var msg = 'Connections: '
