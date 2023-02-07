@@ -102,7 +102,15 @@ var BC_XToys_Websockets = {
         for (let s of this.sockets.values()) {
             this.close(s.url);
         } 
-    }
+    },
+
+    getConnections() {
+        var c = [];
+        for (let k of this.sockets.keys()) {
+            c.push(k);
+        }
+        return c;
+    },
 };
 
 // Ongoing toy state handler, use this to avoid sending duplicate messages
@@ -138,14 +146,6 @@ var BC_XToys_ToyStates =  {
             t.delete(k);
         }
         this.states.delete(slotName);
-    },
-
-    getConnections() {
-        var c = [];
-        for (let k of this.states.keys()) {
-            c.push(k);
-        }
-        return c;
     },
 
     log() {
@@ -380,7 +380,7 @@ var BC_XToys_ToyStates =  {
                         msg += '\n' + c;
                     }
                 }
-                ChatRoomSendLocal(msg);
+                ChatRoomSendLocal(msg, 60000);
             },
         },
         {

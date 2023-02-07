@@ -1,0 +1,137 @@
+[
+    {
+        "Type": "OnSelf",
+        "Intensity": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings", "ItemButt"
+        ],
+        "Actions": [
+            "Caress", "Kiss", "Grope", "Pull"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 60,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings", "ItemButt"
+        ],
+        "Actions": [
+            "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "Nibble", "Lick"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings", "ItemButt"
+        ],
+        "Actions": [
+            "RubItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 60,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemVulva", "ItemVulvaPiercings", "ItemButt"
+        ],
+        "Actions": [
+            "MasturbateItem"
+        ],
+        "Items": [
+            "SmallVibratingWand", "ElectricToothbrush", "SmallDildo", "LargeDildo", "VibratingWand", "Vibrator"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 30,
+        "DurationMS": 5000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemNipples"
+        ],
+        "Actions": [
+            "Caress", "Massage", "Lick", "Rub", "Grope", "Pinch", "Pull"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 20,
+        "DurationMS": 5000,
+        "RampTimeMS": 1,
+        "Names": [
+            "ItemLegs", "ItemBreast", "ItemNipples"
+        ],
+        "Actions": [
+            "Kiss", "Caress", "Massage", "Lick", "Rub", "Grope", "Wiggle"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 5,
+        "DurationMS": 4000,
+        "RampTimeMS": 1,
+        "Names": [
+            "*"
+        ],
+        "Actions": [
+            "Kiss", "Caress", "Massage", "Lick", "Cuddle", "Pet", "RestHead", "Rub", "Sit", "Grope"
+        ],
+        "Items": [
+            "*"
+        ]
+    }, 
+    {
+        "Type": "OnOther",
+        "Intensity": 30,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "*" 
+        ],
+        "Actions": [
+            "PenetrateSlow"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnOther",
+        "Intensity": 60,
+        "DurationMS": 10000,
+        "RampTimeMS": 1,
+        "Names": [
+            "*" 
+        ],
+        "Actions": [
+            "PenetrateFast"
+        ],
+        "Items": [
+            "*"
+        ]
+    }
+]

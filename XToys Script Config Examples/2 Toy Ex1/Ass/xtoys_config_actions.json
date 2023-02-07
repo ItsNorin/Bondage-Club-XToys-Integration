@@ -8,7 +8,22 @@
             "ItemButt"
         ],
         "Actions": [
-            "Caress", "Kiss", "Grope"
+            "Caress", "Kiss", "Grope", "Nibble", "Lick"
+        ],
+        "Items": [
+            "*"
+        ]
+    },
+    {
+        "Type": "OnSelf",
+        "Intensity": 40,
+        "DurationMS": 15000,
+        "RampTimeMS": 1000,
+        "Names": [
+            "ItemButt"
+        ],
+        "Actions": [
+            "PenetrateSlow"
         ],
         "Items": [
             "*"
@@ -18,12 +33,12 @@
         "Type": "OnSelf",
         "Intensity": 60,
         "DurationMS": 15000,
-        "RampTimeMS": 3000,
+        "RampTimeMS": 1000,
         "Names": [
             "ItemButt"
         ],
         "Actions": [
-            "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "Nibble", "Lick"
+            "Masturbate", "MasturbateTongue", "MasturbateFoot", "MasturbateHand", "PenetrateFast"
         ],
         "Items": [
             "*"
@@ -33,7 +48,7 @@
         "Type": "OnSelf",
         "Intensity": 30,
         "DurationMS": 10000,
-        "RampTimeMS": 2000,
+        "RampTimeMS": 1000,
         "Names": [
             "ItemButt"
         ],
@@ -48,7 +63,7 @@
         "Type": "OnSelf",
         "Intensity": 60,
         "DurationMS": 20000,
-        "RampTimeMS": 3000,
+        "RampTimeMS": 1000,
         "Names": [
             "ItemButt"
         ],
@@ -61,7 +76,7 @@
     },
     {
         "Type": "OnSelf",
-        "Intensity": 5,
+        "Intensity": 15,
         "DurationMS": 4000,
         "RampTimeMS": 1000,
         "Names": [
