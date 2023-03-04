@@ -365,7 +365,7 @@ var BC_XToys_ToyStates = {
     // Chatroom command injection 
 
     let FullWssURLRegex = /wss:\/\/([0-9A-Za-z]+(\.[0-9A-Za-z]+)+)\/[0-9A-Za-z]+/i;
-    let FullWsURLRegex = /ws:\/\/([0-9A-Za-z]+(\.[0-9A-Za-z]+)+)\/[0-9A-Za-z]+/i;
+    let FullWsURLRegex = /ws:\/\/([0-9A-Za-z.:]+)/i;
     let CharactersRegex = /^[0-9A-Za-z]*$/i;
 
     const BC_XToys_Command = {
