@@ -333,6 +333,7 @@ var Item_State_Handler = {
             || !(
                 searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') == Player.MemberNumber
                 || searchMsgDictionary(data, 'DestinationCharacterName', 'MemberNumber') == Player.MemberNumber
+                || searchMsgDictionary(data, 'TargetCharacterName', 'MemberNumber') == Player.MemberNumber
             )
         ) {
             return;
