@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.6
+// @version      0.5.7
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.6";
+const BC_XToys_Version = "0.5.7";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
 
 // Chat message contents to always ignore
@@ -253,7 +253,7 @@ var Item_State_Handler = {
     function handleActivities(data) {
         if (data.Type != 'Activity') { return; }
 
-        var activityGroup = searchMsgDictionary(data, 'FocusGroupName');
+        var activityGroup = searchMsgDictionary(data, 'FocusAssetGroup', 'FocusGroupName');
         var activityName = searchMsgDictionary(data, 'ActivityName');
         var activityAsset = searchMsgDictionary(data, 'ActivityAsset', 'AssetName');
         var targetChar = searchMsgDictionary(data, 'TargetCharacter', 'MemberNumber');
@@ -281,10 +281,51 @@ var Item_State_Handler = {
         }
     }
 
+    // for portal link panties tablet activities
+    function handlePortalLink(data) {
+        if (data.Type != 'Action') { return; }
+
+        var activityGroup = searchMsgDictionary(data, 'FocusAssetGroup', 'FocusGroupName');
+        var activityAsset = searchMsgDictionary(data, 'AssetName', 'AssetName');
+        var targetChar = searchMsgDictionary(data, 'TargetCharacter');
+        var sourceChar = searchMsgDictionary(data, 'SourceCharacter');
+
+        // lazy, it works shush
+        var activityName = null;
+        switch (data.Content) {
+            case 'PortalLinkFunctionActivityCaress': activityName = 'Caress'; break;
+            case 'PortalLinkFunctionActivityKiss': activityName = 'Kiss'; break;
+            case 'PortalLinkFunctionActivityMasturbateHand': activityName = 'MasturbateHand'; break;
+            case 'PortalLinkFunctionActivitySlap': activityName = 'Slap'; break;
+            case 'PortalLinkFunctionActivityMasturbateTongue': activityName = 'MasturbateTongue'; break;
+        }
+
+        //console.log(activityGroup + ' ' + activityName + ' ' + activityAsset + ' on ' + targetChar + ' by ' + sourceChar);
+
+        if (activityGroup == null || activityName == null || activityAsset != 'PortalPanties') { return; };
+
+        // activity on self
+        if (targetChar == Player.MemberNumber) {
+            BC_XToys_Websockets.sendFormattedArgs('activityEvent', [
+                ['assetGroupName', activityGroup],
+                ['actionName', activityName],
+                ['assetName', activityAsset]
+            ]);
+        }
+        // activity on others by self
+        else if (sourceChar == Player.MemberNumber) {
+            BC_XToys_Websockets.sendFormattedArgs('activityOnOtherEvent', [
+                ['assetGroupName', activityGroup],
+                ['actionName', activityName],
+                ['assetName', activityAsset]
+            ]);
+        }
+    }
+
     // Toys/items equipped or removed on player
     function handleItemEquip(data) {
         if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber) { return; }
-        var itemSlotName = searchMsgDictionary(data, 'FocusAssetGroup', 'AssetGroupName');
+        var itemSlotName = searchMsgDictionary(data, 'FocusAssetGroup', 'FocusGroupName');
         if (itemSlotName == null) { return; }
 
         // Toy equip
@@ -516,6 +557,7 @@ var Item_State_Handler = {
 
         console.log(data);
 
+        handlePortalLink(data);
         handleActivities(data);
         handleItemEquip(data);
         handleToyEvents(data);
