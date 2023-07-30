@@ -568,15 +568,16 @@ var Item_State_Handler = {
     // future belt
     modApi.hookFunction(
         'InventoryItemPelvisFuturisticTrainingBeltUpdateVibeMode',
-        3,
+        4,
         (args, next) => {
+            //console.log(args);
             next(args);
             if (
-                Array.isArray(args) && args.length == 3
-                && args[2]?.Asset?.Name == 'FuturisticTrainingBelt'
-                && args[2]?.Property?.Intensity != null
+                Array.isArray(args) && args.length == 4
+                && args[3]?.Asset?.Name == 'FuturisticTrainingBelt'
+                && args[3]?.Property?.Intensity != null
             ) {
-                Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', 'ItemPelvis', args[2]?.Property?.Intensity, 1);
+                Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', 'ItemPelvis', args[3]?.Property?.Intensity, 1);
             }
         }
     );
