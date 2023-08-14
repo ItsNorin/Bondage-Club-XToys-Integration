@@ -617,23 +617,24 @@ var Item_State_Handler = {
     // outside chat room hooks //
     /////////////////////////////
 
-    // Manually clicking toy state
+    // Manually clicking own worn item state
     modApi.hookFunction(
-        'TypedItemHandleOptionClick',
-        3,
+        'ExtendedItemSetOption',
+        6,
         (args, next) => {
-            //console.log("TypedItemHandleOptionClick");
-            //console.log(args);
-
             next(args);
+            
+            console.log("ExtendedItemSetOption");
+            console.log(args);
 
-            var slotName = args[0]?.asset?.DynamicGroupName;
-            if (slotName == null) { return; }
-
-            var currentAsset = getPlayerAssetBySlot(slotName);
-            if (currentAsset == null) { return; }
-
-            Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
+            // vibrate or inflation event
+            if (args.length == 6) {
+                const item = args[2];
+                var slotName = item?.Asset?.DynamicGroupName;
+                if (slotName == null) { return; }
+    
+                Item_State_Handler.updateAllOngoingItemDetails(item);
+            }  
         }
     );
 
@@ -642,10 +643,10 @@ var Item_State_Handler = {
         'VibratorModePublish',
         3,
         (args, next) => {
+            next(args);
+            
             console.log("VibratorModePublish");
             console.log(args);
-
-            next(args);
 
             var slotName = args[2]?.Asset?.DynamicGroupName;
             if (slotName == null) { return; }
@@ -656,15 +657,16 @@ var Item_State_Handler = {
             Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
         }
     );
-
+    
     /*
     modApi.hookFunction(
         'ChatRoomPublishCustomAction',
         3,
         (args, next) => {
+            next(args);
+
             console.log("ChatRoomPublishCustomAction");
             console.log(args);
-            next(args);
         }
     );
 
@@ -672,13 +674,15 @@ var Item_State_Handler = {
         'VibratorModeRegister',
         3,
         (args, next) => {
+            next(args);
+
             console.log("VibratorModeRegister");
             console.log(args);
-            next(args);
         }
     );
-
     */
+
+    
 
 })();
 
