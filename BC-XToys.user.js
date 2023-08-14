@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.7
+// @version      0.5.8a
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.7";
+const BC_XToys_Version = "0.5.8a";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
 
 // Chat message contents to always ignore
@@ -612,6 +612,73 @@ var Item_State_Handler = {
             }
         }
     );
+
+    /////////////////////////////
+    // outside chat room hooks //
+    /////////////////////////////
+
+    // Manually clicking toy state
+    modApi.hookFunction(
+        'TypedItemHandleOptionClick',
+        3,
+        (args, next) => {
+            //console.log("TypedItemHandleOptionClick");
+            //console.log(args);
+
+            next(args);
+
+            var slotName = args[0]?.asset?.DynamicGroupName;
+            if (slotName == null) { return; }
+
+            var currentAsset = getPlayerAssetBySlot(slotName);
+            if (currentAsset == null) { return; }
+
+            Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
+        }
+    );
+
+    // Toy self updates for advanced modes
+    modApi.hookFunction(
+        'VibratorModePublish',
+        3,
+        (args, next) => {
+            console.log("VibratorModePublish");
+            console.log(args);
+
+            next(args);
+
+            var slotName = args[2]?.Asset?.DynamicGroupName;
+            if (slotName == null) { return; }
+
+            var currentAsset = getPlayerAssetBySlot(slotName);
+            if (currentAsset == null) { return; }
+
+            Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
+        }
+    );
+
+    /*
+    modApi.hookFunction(
+        'ChatRoomPublishCustomAction',
+        3,
+        (args, next) => {
+            console.log("ChatRoomPublishCustomAction");
+            console.log(args);
+            next(args);
+        }
+    );
+
+    modApi.hookFunction(
+        'VibratorModeRegister',
+        3,
+        (args, next) => {
+            console.log("VibratorModeRegister");
+            console.log(args);
+            next(args);
+        }
+    );
+
+    */
 
 })();
 
