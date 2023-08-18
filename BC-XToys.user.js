@@ -409,7 +409,8 @@ const Item_State_Handler = (function () {
             var prevItemName = searchMsgDictionary(data, 'PrevAsset', 'AssetName');
             if (itemName == null || prevItemName == null) { return; };
 
-            swapToys(itemName, prevItemName, itemSlotName)
+            removeToy(prevItemName, itemSlotName);
+            equipToy(itemName, itemSlotName);
         }
     }
 
@@ -668,7 +669,6 @@ const Item_State_Handler = (function () {
         6,
         (args, next) => {
             next(args);
-
             console.log("ExtendedItemSetOption");
             console.log(args);
 
@@ -683,14 +683,37 @@ const Item_State_Handler = (function () {
         }
     );
 
-    // item equip for some reason, removal, swaps
+    // item removal
     modApi.hookFunction(
         'InventoryRemove',
         3,
         (args, next) => {
-            const itemA = getPlayerAssetBySlot(args[1]);
-
+            if (args[0]?.MemberNumber == Player.MemberNumber) {
+                const itemA = getPlayerAssetBySlot(args[1]);
+                var name = itemA?.Asset?.Name;
+                var slot = itemA?.Asset?.DynamicGroupName;
+                if(name != undefined || slot != undefined) {
+                    removeToy(name, slot);
+                } 
+            }
             next(args);
+        }
+    );
+
+    // item equip
+    modApi.hookFunction(
+        'InventoryWear',
+        8,
+        (args, next) => {
+            next(args);
+            if (args[0]?.MemberNumber == Player.MemberNumber) {
+                const itemA = getPlayerAssetByName(args[1]);
+                var name = itemA?.Asset?.Name;
+                var slot = itemA?.Asset?.DynamicGroupName;
+                if(name != undefined || slot != undefined) {
+                    equipToy(name, slot);
+                } 
+            }
         }
     );
 
