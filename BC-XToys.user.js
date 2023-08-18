@@ -29,7 +29,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 var BC_XToys_defaultPunishShockLevel = 1;
 
 // Websocket manager to handle connections and sending messages
-var BC_XToys_Websockets = {
+const BC_XToys_Websockets = {
     sockets: new Map(),
 
     // if false, will not send anything
@@ -155,86 +155,122 @@ var BC_XToys_Websockets = {
     },
 };
 
-// Ongoing toy state handler, use this to avoid sending duplicate messages
-var Item_State_Handler = {
-    // states is a map of slot names, each containing a map of stateTypes with a level
-    states: new Map(),
+// Ongoing slot state handler, use this to avoid sending duplicate messages for restraint and toy related events
+const Item_State_Handler = (function () {
+    // states is a map of slot names, each containing:
+    // - the current a worn item name 
+    // - a map of stateTypes with a level
+    const _states = new Map();
 
-    setState(slotName, stateType, level) {
-        if (this.states.get(slotName) == null) {
-            this.states.set(slotName, new Map());
+    // creates map entry for given slot name if needed
+    function _initSlot(slotName) {
+        if (_states.get(slotName) == null) {
+            _states.set(slotName, { itemName: null, effects: new Map() });
         }
-        var t = this.states.get(slotName);
-        t.set(stateType, level);
-    },
+    }
 
-    // returns level for given stateType of slot, ex: 'Vibration', 'Inflation'
-    getState(slotName, stateType) {
-        var t = this.states.get(slotName);
-        return (t == null) ? null : t.get(stateType);
-    },
-
-    // true if level of stateType for given slot already exists
-    hasState(slotName, stateType, level) {
-        var l = this.getState(slotName, stateType);
-        return (l == null) ? false : l == level;
-    },
-
-    clearSlot(slotName) {
-        var t = this.states.get(slotName);
+    function _deleteSlot(slotName) {
+        var t = _states.get(slotName);
         if (t == null) { return; }
 
-        for (let k of t.keys()) {
-            t.delete(k);
+        for (let k of t.effects.keys()) {
+            t.effects.delete(k);
         }
-        this.states.delete(slotName);
-    },
-
-    log() {
-        console.log(this.states);
-    },
-
-
-    updateItemProperties(stateType, xToysDataTag, slot, level, levelOffset = 0) {
-        if (slot == null || level == null || BC_XToys_Websockets == null) { return; }
-
-        level += levelOffset;
-
-        //console.log('states have ' + slot + ' ' + stateType + ' ' + level + ': ' + this.hasState(slot, stateType, level));
-        if (this.hasState(slot, stateType, level)) { return; }
-
-        this.setState(slot, stateType, level);
-
-        BC_XToys_Websockets.sendFormattedArgs(xToysDataTag, [
-            ['assetGroupName', slot],
-            ['level', level]
-        ]);
-    },
-
-    updateAllOngoingItemDetails(appearanceItem) {
-        this.updateItemProperties(
-            'Vibration', 'toyEvent',
-            appearanceItem?.Asset?.DynamicGroupName,
-            appearanceItem?.Property?.Intensity,
-            1
-        );
-        this.updateItemProperties(
-            'Inflation', 'inflationEvent',
-            appearanceItem?.Asset?.DynamicGroupName,
-            appearanceItem?.Property?.InflateLevel
-        )
-    },
-
-    clearAllOngoingItemDetails(slot) {
-        if (this.getState(slot, 'Vibration') != null) {
-            this.updateItemProperties('Vibration', 'toyEvent', slot, 0);
-        }
-        if (this.getState(slot, 'Inflation') != null) {
-            this.updateItemProperties('Inflation', 'inflationEvent', slot, 0);
-        }
-        this.clearSlot(slot);
+        _states.delete(slotName);
     }
-};
+
+    return { // public interface
+        log() {
+            console.log(_states);
+        },
+
+        // sets state for given slot, needs slot's item name, and an effect and its level
+        setState: function (slotName, itemName, effectType, level = 0) {
+            _initSlot(slotName);
+            var s = _states.get(slotName);
+            s.itemName = itemName;
+            s.effects.set(effectType, level);
+        },
+
+        // returns all saved states for slot
+        getState: function (slotName) {
+            return _states.get(slotName);
+        },
+
+        // sets an effect for given slot and effect type, can have multiple effects with seprate levels
+        setEffect: function (slotName, effectType, level) {
+            _initSlot(slotName);
+            s.effects.set(effectType, level);
+        },
+
+        // returns level for given stateType of slot, ex: 'Vibration', 'Inflation'
+        getEffect: function (slotName, stateType) {
+            var s = this.getState(slotName);
+            return (s == null) ? null : s.effects.get(stateType);
+        },
+
+        // returns item name for given slot
+        getItemName: function (slotName) {
+            var s = this.getState(slotName);
+            return (s == null) ? null : s.itemName;
+        },
+
+        // true if level of stateType for given slot already exists
+        hasEffectInSlot: function (slotName, stateType, level) {
+            var l = this.getEffect(slotName, stateType);
+            return (l == null) ? false : l == level;
+        },
+
+        // deletes all information for given slot
+        clearSlot: function (slotName) {
+            _deleteSlot(slotName);
+        },
+
+        updateItemProperties: function (effect, xToysDataTag, slot, itemName, level, levelOffset = 0) {
+            if (slot == undefined || level == undefined || itemName == undefined) { return; }
+
+            level += levelOffset;
+
+            //console.log('states have ' + slot + ' ' + stateType + ' ' + level + ': ' + this.hasState(slot, stateType, level));
+            if (this.hasEffectInSlot(slot, effect, level)) { return; }
+
+            this.setState(slot, itemName, effect, level);
+
+            BC_XToys_Websockets.sendFormattedArgs(xToysDataTag, [
+                ['assetGroupName', slot],
+                ['level', level],
+                ['itemName', itemName]
+            ]);
+        },
+
+        updateAllOngoingItemDetails: function (appearanceItem) {
+            this.updateItemProperties(
+                'Vibration', 'toyEvent',
+                appearanceItem?.Asset?.DynamicGroupName,
+                appearanceItem?.Asset?.Name,
+                appearanceItem?.Property?.Intensity,
+                1
+            );
+            this.updateItemProperties(
+                'Inflation', 'inflationEvent',
+                appearanceItem?.Asset?.DynamicGroupName,
+                appearanceItem?.Asset?.Name,
+                appearanceItem?.Property?.InflateLevel
+            )
+        },
+
+        clearAllOngoingSlotDetails: function (slot) {
+            if (this.getState(slot, 'Vibration') != null) {
+                this.updateItemProperties('Vibration', 'toyEvent', slot, this.getItemName(slot), 0);
+            }
+            if (this.getState(slot, 'Inflation') != null) {
+                this.updateItemProperties('Inflation', 'inflationEvent', slot, this.getItemName(slot), 0);
+            }
+            this.clearSlot(slot);
+        }
+    };
+})();
+
 
 (async function () {
     await waitFor(() => ServerIsConnected && ServerSocket);
@@ -322,6 +358,29 @@ var Item_State_Handler = {
         }
     }
 
+    function equipToy(itemName, itemSlotName) {
+        BC_XToys_Websockets.sendFormattedArgs('itemAdded', [
+            ['assetName', itemName],
+            ['assetGroupName', itemSlotName]
+        ]);
+        Item_State_Handler.updateAllOngoingItemDetails(getPlayerAssetByName(itemName));
+    }
+    function removeToy(itemName, itemSlotName) {
+        BC_XToys_Websockets.sendFormattedArgs('itemRemoved', [
+            ['assetName', itemName],
+            ['assetGroupName', itemSlotName]
+        ]);
+        Item_State_Handler.clearAllOngoingSlotDetails(itemSlotName);
+    }
+    function swapToys(itemName, prevItemName, itemSlotName) {
+        BC_XToys_Websockets.sendFormattedArgs('itemSwapped', [
+            ['assetName', itemName],
+            ['prevAssetName', prevItemName],
+            ['assetGroupName', itemSlotName]
+        ]);
+        Item_State_Handler.updateAllOngoingItemDetails(getPlayerAssetByName(itemName));
+    }
+
     // Toys/items equipped or removed on player
     function handleItemEquip(data) {
         if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber) { return; }
@@ -334,23 +393,14 @@ var Item_State_Handler = {
             var itemName = searchMsgDictionary(data, 'NextAsset', 'AssetName');
             if (itemName == null) { return; };
 
-            BC_XToys_Websockets.sendFormattedArgs('itemAdded', [
-                ['assetName', itemName],
-                ['assetGroupName', itemSlotName]
-            ]);
-            Item_State_Handler.updateAllOngoingItemDetails(getPlayerAssetByName(itemName));
+            equipToy(itemName, itemSlotName);
         }
         // Toy removal
         else if (data.Content == 'ActionRemove') {
             //console.log('Removed: ' + itemSlotName);
             var itemName = searchMsgDictionary(data, 'PrevAsset', 'AssetName');
             if (itemName == null) { return; };
-
-            BC_XToys_Websockets.sendFormattedArgs('itemRemoved', [
-                ['assetName', itemName],
-                ['assetGroupName', itemSlotName]
-            ]);
-            Item_State_Handler.clearAllOngoingItemDetails(itemSlotName);
+            removeToy(itemName, itemSlotName);
         }
         // Toy swaps
         else if (data.Content == 'ActionSwap') {
@@ -359,12 +409,7 @@ var Item_State_Handler = {
             var prevItemName = searchMsgDictionary(data, 'PrevAsset', 'AssetName');
             if (itemName == null || prevItemName == null) { return; };
 
-            BC_XToys_Websockets.sendFormattedArgs('itemSwapped', [
-                ['assetName', itemName],
-                ['prevAssetName', prevItemName],
-                ['assetGroupName', itemSlotName]
-            ]);
-            Item_State_Handler.updateAllOngoingItemDetails(getPlayerAssetByName(itemName));
+            swapToys(itemName, prevItemName, itemSlotName)
         }
     }
 
@@ -577,7 +622,7 @@ var Item_State_Handler = {
                 && args[3]?.Asset?.Name == 'FuturisticTrainingBelt'
                 && args[3]?.Property?.Intensity != null
             ) {
-                Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', 'ItemPelvis', args[3]?.Property?.Intensity, 1);
+                Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', 'ItemPelvis', 'FuturisticTrainingBelt', args[3]?.Property?.Intensity, 1);
             }
         }
     );
@@ -623,7 +668,7 @@ var Item_State_Handler = {
         6,
         (args, next) => {
             next(args);
-            
+
             console.log("ExtendedItemSetOption");
             console.log(args);
 
@@ -632,9 +677,20 @@ var Item_State_Handler = {
                 const item = args[2];
                 var slotName = item?.Asset?.DynamicGroupName;
                 if (slotName == null) { return; }
-    
+
                 Item_State_Handler.updateAllOngoingItemDetails(item);
-            }  
+            }
+        }
+    );
+
+    // item equip for some reason, removal, swaps
+    modApi.hookFunction(
+        'InventoryRemove',
+        3,
+        (args, next) => {
+            const itemA = getPlayerAssetBySlot(args[1]);
+
+            next(args);
         }
     );
 
@@ -644,7 +700,7 @@ var Item_State_Handler = {
         3,
         (args, next) => {
             next(args);
-            
+
             console.log("VibratorModePublish");
             console.log(args);
 
@@ -657,7 +713,7 @@ var Item_State_Handler = {
             Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
         }
     );
-    
+
     /*
     modApi.hookFunction(
         'ChatRoomPublishCustomAction',
@@ -682,7 +738,7 @@ var Item_State_Handler = {
     );
     */
 
-    
+
 
 })();
 
