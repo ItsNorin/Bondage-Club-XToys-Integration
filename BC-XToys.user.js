@@ -669,11 +669,11 @@ const Item_State_Handler = (function () {
         6,
         (args, next) => {
             next(args);
-            console.log("ExtendedItemSetOption");
-            console.log(args);
+            //console.log("ExtendedItemSetOption");
+            //console.log(args);
 
             // vibrate or inflation event
-            if (args.length == 6) {
+            if (args.length == 6 && args[1]?.MemberNumber == Player.MemberNumber) {
                 const item = args[2];
                 var slotName = item?.Asset?.DynamicGroupName;
                 if (slotName == null) { return; }
@@ -692,9 +692,9 @@ const Item_State_Handler = (function () {
                 const itemA = getPlayerAssetBySlot(args[1]);
                 var name = itemA?.Asset?.Name;
                 var slot = itemA?.Asset?.DynamicGroupName;
-                if(name != undefined || slot != undefined) {
+                if (name != undefined || slot != undefined) {
                     removeToy(name, slot);
-                } 
+                }
             }
             next(args);
         }
@@ -710,9 +710,9 @@ const Item_State_Handler = (function () {
                 const itemA = getPlayerAssetByName(args[1]);
                 var name = itemA?.Asset?.Name;
                 var slot = itemA?.Asset?.DynamicGroupName;
-                if(name != undefined || slot != undefined) {
+                if (name != undefined || slot != undefined) {
                     equipToy(name, slot);
-                } 
+                }
             }
         }
     );
@@ -724,16 +724,18 @@ const Item_State_Handler = (function () {
         (args, next) => {
             next(args);
 
-            console.log("VibratorModePublish");
-            console.log(args);
+            //console.log("VibratorModePublish");
+            //console.log(args);
 
-            var slotName = args[2]?.Asset?.DynamicGroupName;
-            if (slotName == null) { return; }
+            if (args[1]?.MemberNumber == Player.MemberNumber) {
+                var slotName = args[2]?.Asset?.DynamicGroupName;
+                if (slotName == null) { return; }
 
-            var currentAsset = getPlayerAssetBySlot(slotName);
-            if (currentAsset == null) { return; }
+                var currentAsset = getPlayerAssetBySlot(slotName);
+                if (currentAsset == null) { return; }
 
-            Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
+                Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
+            }
         }
     );
 
