@@ -53,7 +53,7 @@ const BC_XToys_Websockets = {
     },
     saveSockets() {
         var urls = JSON.stringify(Array.from(this.sockets.keys()));
-        if (urls != this.getSavedSockets()) {
+        if (urls != localStorage.getItem("BC-XToys Websockets")) {
             console.log("BC-XToys: Saving urls to local storage: " + urls);
             localStorage.setItem("BC-XToys Websockets", urls);
         }
