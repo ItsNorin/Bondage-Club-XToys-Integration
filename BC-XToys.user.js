@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.8b
+// @version      0.5.8c
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.8b";
+const BC_XToys_Version = "0.5.8c";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
 
 // Chat message contents to always ignore
@@ -33,6 +33,8 @@ const modApi = bcModSdk.registerMod({
     repository: "https://github.com/ItsNorin/Bondage-Club-XToys-Integration",
 });
 
+console.log("Starting " + BC_XToys_FullName + " version " + BC_XToys_Version + ".");
+
 var BC_XToys_defaultPunishShockLevel = 1;
 
 // Websocket manager to handle connections and sending messages
@@ -45,10 +47,16 @@ const BC_XToys_Websockets = {
     // whether to attempt to reconnect when a socket comes offline
     autoReconnectMap: new Map(),
 
+    getSavedSockets() {
+        var urls = JSON.parse(localStorage.getItem("BC-XToys Websockets"));
+        return Array.isArray(urls) ? urls : [];
+    },
     saveSockets() {
         var urls = JSON.stringify(Array.from(this.sockets.keys()));
-        console.log("BC-XToys: Saving urls to local storage: " + urls);
-        localStorage.setItem("BC-XToys Websockets", urls);
+        if (urls != this.getSavedSockets()) {
+            console.log("BC-XToys: Saving urls to local storage: " + urls);
+            localStorage.setItem("BC-XToys Websockets", urls);
+        }
     },
 
     // whether to try to connect to locally saved websockets on startup
@@ -126,13 +134,10 @@ const BC_XToys_Websockets = {
 
     connectToSavedSocketsIfAllowed() {
         if (this.getAutoConnectState() != true) { return; }
-        var urls = JSON.parse(localStorage.getItem("BC-XToys Websockets"));
         console.log("BC-XToys: Connecting to urls from local storage: ");
 
-        if (Array.isArray(urls)) {
-            for (var u in urls) {
-                this.connect(urls[u]);
-            }
+        for (let u of this.getSavedSockets()) {
+            this.connect(u);
         }
     },
 
@@ -362,8 +367,6 @@ const Item_State_Handler = (function () {
     await waitFor(() => ServerIsConnected && ServerSocket);
     await waitFor(() => !!Commands);
 
-    console.log("Starting " + BC_XToys_FullName + " version " + BC_XToys_Version + ".");
-
     // Activities involving player
     function handleActivities(data) {
         if (data.Type != 'Activity') { return; }
@@ -460,9 +463,14 @@ const Item_State_Handler = (function () {
         Item_State_Handler.updateAllOngoingItemDetails(getPlayerAssetByName(itemName));
     }
 
-    // Toys/items equipped or removed on player
+    // Toys/items equipped or removed on player. Will ignore if done by player themselves, that is caught by function hooks
     function handleItemEquip(data) {
-        if (data.Type != 'Action' || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber) { return; }
+        if (data.Type != 'Action'
+            || searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') != Player.MemberNumber
+            || searchMsgDictionary(data, 'SourceCharacter', 'MemberNumber') == Player.MemberNumber
+        ) {
+            return;
+        }
         var itemSlotName = searchMsgDictionary(data, 'FocusAssetGroup', 'FocusGroupName');
         if (itemSlotName == null) { return; }
 
@@ -493,6 +501,17 @@ const Item_State_Handler = (function () {
         }
     }
 
+    function sendShockEvent(slot, level, assetName = null) {
+        if (level >= 0) {
+            const shockLevelNameMap = ['ShockLow', 'ShockMed', 'ShockHigh'];
+            BC_XToys_Websockets.sendFormattedArgs('activityEvent', [
+                ['assetGroupName', slot],
+                ['actionName', shockLevelNameMap[level]],
+                ['assetName', assetName]
+            ]);
+        }
+    }
+
     // Toys affecting player
     function handleToyEvents(data) {
         if (data.Type != 'Action'
@@ -512,14 +531,7 @@ const Item_State_Handler = (function () {
         if (activityGroup == null || currentAsset == null || assetName == null) { return; }
 
         Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
-
-        var shockLevel = getShockLevelFromMsg(data);
-        if (shockLevel >= 0) {
-            BC_XToys_Websockets.sendFormattedArgs('shockEvent', [
-                ['assetGroupName', activityGroup],
-                ['level', shockLevel]
-            ]);
-        }
+        sendShockEvent(activityGroup, getShockLevelFromMsg(data), assetName);
     }
 
     // Sends help message on first join to a chat room
@@ -739,26 +751,10 @@ const Item_State_Handler = (function () {
             if (
                 Array.isArray(args) && args.length >= 3
                 && typeof args[2] == 'string'
+                && ['Struggle', 'StruggleOther', 'Orgasm', 'Standup', 'Speech', 'RequiredSpeech', 'ProhibitedSpeech'].includes(args[2])
             ) {
-                if (['Struggle', 'StruggleOther', 'Orgasm', 'Standup', 'Speech', 'RequiredSpeech', 'ProhibitedSpeech'].includes(args[2])) {
-                    var isShock = true;
-
-                    var a = [
-                        ["assetGroupName", "ItemPelvis"],
-                        ["level", BC_XToys_defaultPunishShockLevel],
-                        ["reason", args[2]]
-                    ]
-
-                    if (args.length == 5) {
-                        isShock = !args[4];
-                        if (args[3] != null || args[3] != '') {
-                            a.push(['replacementWord', args[3]]);
-                        }
-                    }
-
-                    BC_XToys_Websockets.sendFormattedArgs(isShock ? "shockEvent" : 'futureBeltPunishment', a);
-                }
-            }
+                sendShockEvent('ItemPelvis', BC_XToys_defaultPunishShockLevel, 'FuturisticTrainingBelt')
+            };
         }
     );
 
