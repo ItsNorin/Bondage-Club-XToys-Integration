@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.8c
+// @version      0.5.8d
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.8c";
+const BC_XToys_Version = "0.5.8d";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
 
 // Chat message contents to always ignore
@@ -36,6 +36,7 @@ const modApi = bcModSdk.registerMod({
 console.log("Starting " + BC_XToys_FullName + " version " + BC_XToys_Version + ".");
 
 var BC_XToys_defaultPunishShockLevel = 1;
+var BC_XToys_minTimeBetweenShocks = 500;
 
 // Websocket manager to handle connections and sending messages
 const BC_XToys_Websockets = {
@@ -270,9 +271,48 @@ const Item_State_Handler = (function () {
         _states.delete(slotName);
     }
 
+
+    // prevents duplicate shock events
+    // [ [time, slot, level, assetName], [...], ... ]
+    // oldest events are first in history
+    var _shockHistory = new Array();
+
+    const _shockLevelNameMap = ['ShockLow', 'ShockMed', 'ShockHigh'];
+
+    function _addShockToHistory(slot, level, assetName) {
+        _shockHistory.push([new Date().getTime(), slot, level, assetName]);
+    }
+
+    function _clearOldShocks() {
+        var _r = true;
+        while (_r == true && _shockHistory.length > 0) {
+            //console.log(new Date().getTime() - _shockHistory[0][0]);
+            if (new Date().getTime() - _shockHistory[0][0] > BC_XToys_minTimeBetweenShocks) {
+                var old = _shockHistory.shift();
+                //console.log("Expired: " + old);
+            } else {
+                _r = false;
+            }
+        }
+    }
+
+    // true if shock with given slot and level is in history
+    function _hasShockInHistory(slot, level) {
+        for (i in _shockHistory) {
+            if (_shockHistory[i][1] == slot && _shockHistory[i][2] == level) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     return { // public interface
         log() {
             console.log(_states);
+        },
+
+        logShockHistory() {
+            console.log(_shockHistory);
         },
 
         // sets state for given slot, needs slot's item name, and an effect and its level
@@ -359,6 +399,23 @@ const Item_State_Handler = (function () {
             }
             this.clearSlot(slot);
         },
+
+        // sends shock only if one hasn't been sent for that slot very recently
+        sendShockEvent(slot, level, assetName = null) {
+            if (level >= 0 && level <= 2 && slot != null) {
+                _clearOldShocks();
+
+                if (!_hasShockInHistory(slot, level)) {
+                    BC_XToys_Websockets.sendFormattedArgs('activityEvent', [
+                        ['assetGroupName', slot],
+                        ['actionName', _shockLevelNameMap[level]],
+                        ['assetName', assetName]
+                    ]);
+
+                    _addShockToHistory(slot, level, assetName);
+                }
+            }
+        }
     };
 })();
 
@@ -501,16 +558,7 @@ const Item_State_Handler = (function () {
         }
     }
 
-    function sendShockEvent(slot, level, assetName = null) {
-        if (level >= 0) {
-            const shockLevelNameMap = ['ShockLow', 'ShockMed', 'ShockHigh'];
-            BC_XToys_Websockets.sendFormattedArgs('activityEvent', [
-                ['assetGroupName', slot],
-                ['actionName', shockLevelNameMap[level]],
-                ['assetName', assetName]
-            ]);
-        }
-    }
+
 
     // Toys affecting player
     function handleToyEvents(data) {
@@ -531,7 +579,7 @@ const Item_State_Handler = (function () {
         if (activityGroup == null || currentAsset == null || assetName == null) { return; }
 
         Item_State_Handler.updateAllOngoingItemDetails(currentAsset);
-        sendShockEvent(activityGroup, getShockLevelFromMsg(data), assetName);
+        Item_State_Handler.sendShockEvent(activityGroup, getShockLevelFromMsg(data), assetName);
     }
 
     // Sends help message on first join to a chat room
@@ -715,8 +763,7 @@ const Item_State_Handler = (function () {
         }
 
         sendFirstChatroomMsg(data);
-
-        //console.log(data);
+        console.log(data);
 
         handlePortalLink(data);
         handleActivities(data);
@@ -724,6 +771,16 @@ const Item_State_Handler = (function () {
         handleToyEvents(data);
     });
 
+    /*
+    modApi.hookFunction(
+        'ChatRoomMessage',
+        1,
+        (args, next) => {
+            next(args);
+            console.log('ChatRoomMessage');
+            console.log(args);
+        }
+    ); */
     // handle toys not properly described in chat
 
     // future belt
@@ -753,7 +810,7 @@ const Item_State_Handler = (function () {
                 && typeof args[2] == 'string'
                 && ['Struggle', 'StruggleOther', 'Orgasm', 'Standup', 'Speech', 'RequiredSpeech', 'ProhibitedSpeech'].includes(args[2])
             ) {
-                sendShockEvent('ItemPelvis', BC_XToys_defaultPunishShockLevel, 'FuturisticTrainingBelt')
+                Item_State_Handler.sendShockEvent('ItemPelvis', BC_XToys_defaultPunishShockLevel, 'FuturisticTrainingBelt')
             };
         }
     );
@@ -761,6 +818,33 @@ const Item_State_Handler = (function () {
     /////////////////////////////
     // outside chat room hooks //
     /////////////////////////////
+
+    // Shocks
+    modApi.hookFunction(
+        'PropertyShockPublishAction',
+        3,
+        (args, next) => {
+            var shockItem = null;
+            if (Array.isArray(args) && args[1]?.Property != null) {
+                shockItem = args[1];
+            } else if (DialogFocusItem?.Property != null) {
+                shockItem = DialogFocusItem;
+            }
+
+            //console.log("PropertyShockPublishAction");
+            //console.log(shockItem);
+
+            if (shockItem != null) {
+                var shockLevel = shockItem?.Property?.ShockLevel;
+                if (shockLevel == null) {
+                    shockLevel = BC_XToys_defaultPunishShockLevel;
+                }
+                Item_State_Handler.sendShockEvent(shockItem?.Asset?.DynamicGroupName, shockLevel, shockItem?.Asset?.Name);
+            }
+
+            next(args);
+        }
+    );
 
     // Manually clicking own worn item state
     modApi.hookFunction(
