@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.8d
+// @version      0.5.8
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,7 +14,7 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.8d";
+const BC_XToys_Version = "0.5.8";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
 
 // Chat message contents to always ignore
