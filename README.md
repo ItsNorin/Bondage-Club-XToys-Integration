@@ -10,7 +10,7 @@ Made for controlling irl toys  based on your in game character's worn toys, as w
 
 ## Usage
 
-1. Install the Tampermonkey extension, add [itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToysLoader.user.js](https://itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToysLoader.user.js) as a userscript. Alternatively if you just want the latest version without auto updates, add [itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToys.user.js](https://itsnorin.github.io/Bondage-Club-XToys-Integration/BCXToys.user.js)
+1. Install the Tampermonkey extension, add [itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToysLoader.user.js](https://itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToysLoader.user.js) as a userscript. Alternatively if you just want the latest version without auto updates, add [itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToys.user.js](https://itsnorin.github.io/Bondage-Club-XToys-Integration/BC-XToys.user.js)
 2. Go to [xtoys.app/scripts/-NKBBRsS_zPuUags3DNb](https://xtoys.app/scripts/-NKBBRsS_zPuUags3DNb) and press "Load Script". Press the little green arrow in the corner to start the script, connect a toy using the plug symbol. 
 3. Copy the Webhook ID from the XToys script, open the Bondage Club site, and enter any online chat room. The Tampermonkey script can only grab events to send if you're in one.
 4. Use /bcxtoys connect \[Webhook ID\] to connect your XToys session, /bcxtoys disconnect to disconnect. To see all connections, use /bcxtoys list to view all connections, and /bcxtoys help to see general info about the mod.
