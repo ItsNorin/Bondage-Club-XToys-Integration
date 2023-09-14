@@ -116,7 +116,7 @@ const BC_XToys_Websockets = {
             var m = 'Disconnected from ' + url;
             ChatRoomSendLocal(m, 60000);
             console.log("BC-XToys: " + m);
-            close(url);
+            BC_XToys_Websockets.close(url);
 
             // attempt reconnections if desired
             if (BC_XToys_Websockets.getAutoReconnectState() == true) {
