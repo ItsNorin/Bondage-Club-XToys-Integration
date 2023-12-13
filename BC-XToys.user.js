@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Bondage Club XToys Integration
 // @namespace    BC-XToys
-// @version      0.5.8
+// @version      0.5.9
 // @description  Sends in game actions and toy activity to XToys.
 // @author       ItsNorin
 // @match        https://bondageprojects.elementfx.com/*
@@ -14,8 +14,9 @@
 // @grant        none
 // ==/UserScript==
 
-const BC_XToys_Version = "0.5.8";
+const BC_XToys_Version = "0.5.9";
 const BC_XToys_FullName = "Bondage Club XToys Integration";
+const BC_XToys_ShortName = "BC-XToys";
 
 // Chat message contents to always ignore
 const BC_XToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'Wardrobe', 'SlowLeaveAttempt', 'ServerUpdateRoom', 'bctMsg']);
@@ -28,7 +29,7 @@ var bcModSdk = function () { "use strict"; const e = "1.1.0"; function o(e) { al
 
 const modApi = bcModSdk.registerMod({
     name: "Bondage Club XToys Integration",
-    fullName: "BC-XToys",
+    fullName: BC_XToys_ShortName,
     version: BC_XToys_Version,
     repository: "https://github.com/ItsNorin/Bondage-Club-XToys-Integration",
 });
@@ -49,36 +50,36 @@ const BC_XToys_Websockets = {
     autoReconnectMap: new Map(),
 
     getSavedSockets() {
-        var urls = JSON.parse(localStorage.getItem("BC-XToys Websockets"));
+        var urls = JSON.parse(localStorage.getItem(BC_XToys_ShortName + " Websockets"));
         return Array.isArray(urls) ? urls : [];
     },
     saveSockets() {
         var urls = JSON.stringify(Array.from(this.sockets.keys()));
-        if (urls != localStorage.getItem("BC-XToys Websockets")) {
-            console.log("BC-XToys: Saving urls to local storage: " + urls);
-            localStorage.setItem("BC-XToys Websockets", urls);
+        if (urls != localStorage.getItem(BC_XToys_ShortName + " Websockets")) {
+            console.log(BC_XToys_ShortName + ": Saving urls to local storage: " + urls);
+            localStorage.setItem(BC_XToys_ShortName + " Websockets", urls);
         }
     },
 
     // whether to try to connect to locally saved websockets on startup
     setAutoConnectState(e) {
         if (e === true || e === false) {
-            localStorage.setItem("BC-XToys AutoConnect", JSON.stringify(e));
+            localStorage.setItem(BC_XToys_ShortName + " AutoConnect", JSON.stringify(e));
         }
     },
     getAutoConnectState() {
-        var s = JSON.parse(localStorage.getItem("BC-XToys AutoConnect"));
+        var s = JSON.parse(localStorage.getItem(BC_XToys_ShortName + " AutoConnect"));
         return (s === true) ? true : false;
     },
 
     // whether to attempt to reconnect when a socket comes offline
     setAutoReconnectState(e) {
         if (e === true || e === false) {
-            localStorage.setItem("BC-XToys AutoReconnect", JSON.stringify(e));
+            localStorage.setItem(BC_XToys_ShortName + " AutoReconnect", JSON.stringify(e));
         }
     },
     getAutoReconnectState() {
-        var s = JSON.parse(localStorage.getItem("BC-XToys AutoReconnect"));
+        var s = JSON.parse(localStorage.getItem(BC_XToys_ShortName + " AutoReconnect"));
         return (s === true) ? true : false;
     },
 
@@ -89,7 +90,7 @@ const BC_XToys_Websockets = {
         if (this.hasConnection(url)) {
             var m = 'Already connected to ' + url;
             ChatRoomSendLocal(m, 60000);
-            console.log("BC-XToys: " + m);
+            console.log(BC_XToys_ShortName + ": " + m);
             return;
         }
 
@@ -99,7 +100,7 @@ const BC_XToys_Websockets = {
         newSocket.onopen = function (e) {
             var m = 'Connected to ' + newSocket.url;
             ChatRoomSendLocal(m, 60000);
-            console.log("BC-XToys: " + m);
+            console.log(BC_XToys_ShortName + ": " + m);
 
             if (BC_XToys_Websockets.getAutoConnectState() == true) {
                 BC_XToys_Websockets.saveSockets();
@@ -115,7 +116,7 @@ const BC_XToys_Websockets = {
         newSocket.onclose = function (event) {
             var m = 'Disconnected from ' + url;
             ChatRoomSendLocal(m, 60000);
-            console.log("BC-XToys: " + m);
+            console.log(BC_XToys_ShortName + ": " + m);
             BC_XToys_Websockets.close(url);
 
             // attempt reconnections if desired
@@ -135,7 +136,7 @@ const BC_XToys_Websockets = {
 
     connectToSavedSocketsIfAllowed() {
         if (this.getAutoConnectState() != true) { return; }
-        console.log("BC-XToys: Connecting to urls from local storage: ");
+        console.log(BC_XToys_ShortName + ": Connecting to urls from local storage: ");
 
         for (let u of this.getSavedSockets()) {
             this.connect(u);
@@ -151,7 +152,7 @@ const BC_XToys_Websockets = {
             logMsg += s.url + ', ';
             s.send(text);
         }
-        console.log("BC-XToys: " + logMsg);
+        console.log(BC_XToys_ShortName + ": " + logMsg);
     },
 
     // sends formatted arguements to all connected websockets
@@ -358,11 +359,11 @@ const Item_State_Handler = (function () {
         },
 
         updateItemProperties: function (effect, xToysDataTag, slot, itemName, level, levelOffset = 0) {
+            console.log("effect:" + effect + "  xToysDataTag:" + xToysDataTag + "  slot:" + slot + "  itemName:" + itemName + "  level:" + level);
             if (slot == undefined || level == undefined || itemName == undefined) { return; }
 
             level += levelOffset;
 
-            //console.log('states have ' + slot + ' ' + stateType + ' ' + level + ': ' + this.hasState(slot, stateType, level));
             if (this.hasEffectInSlot(slot, effect, level)) { return; }
 
             this.setState(slot, itemName, effect, level);
@@ -423,6 +424,8 @@ const Item_State_Handler = (function () {
 (async function () {
     await waitFor(() => ServerIsConnected && ServerSocket);
     await waitFor(() => !!Commands);
+
+
 
     // Activities involving player
     function handleActivities(data) {
@@ -497,6 +500,62 @@ const Item_State_Handler = (function () {
         }
     }
 
+    // for items that don't have states, only readable value is data.Content 
+    function handleCustomItemTextAsVibe(
+        slotName, itemName, Content, 
+        itemNameRegex, 
+        offRegex, lowRegex, medRegex, highRegex, maxRegex
+    ) {
+        if (!itemNameRegex.test(Content)) { return; }
+
+        var intensity = -1;
+
+        if (offRegex.test(Content)) {
+            intensity = 0;
+        } else if (lowRegex.test(Content)) {
+            intensity = 1;
+        } else if (medRegex.test(Content)) {
+            intensity = 2;
+        } else if (highRegex.test(Content)) {
+            intensity = 3;
+        } else if (maxRegex.test(Content)) {
+            intensity = 4;
+        }  
+
+        if (intensity == -1) { return; }
+        
+        Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', slotName, itemName, intensity);
+    }
+
+    function handleCustomTextItems(data) {
+        if (data.Type != 'Action'
+            || !( searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') == Player.MemberNumber )
+        ) { return; }
+
+        handleCustomItemTextAsVibe(
+            'ItemNipples', 'LactationPump', data.Content, 
+            /LactationPumpPower/i, 
+            /ToOff/i, /LowSuction/i, /MediumSuction/i, /HighSuction/i, /MaximumSuction/i
+        );
+        handleCustomItemTextAsVibe(
+            'ItemNipples', 'NippleSuctionCups', data.Content, 
+            /NipSuc/i, 
+            /ToLoose/i, /ToLight/i, /ToMedium/i, /ToHeavy/i, /ToMaximum/i
+        );
+        handleCustomItemTextAsVibe(
+            'ItemNipples', 'PlateClamps', data.Content, 
+            /ItemNipplesPlate/i, 
+            /ClampsLoose/i, /ClampsLoose/i, /ClampsLoose/i, /ClampsLoose/i, /ClampsTight/i
+        );
+        handleCustomItemTextAsVibe(
+            'ItemButt', 'ButtPump', data.Content, 
+            /BPumps/i, 
+            /ToEmpty/i, /ToLight/i, /ToInflated/i, /ToBloated/i, /ToMaximum/i
+        );
+
+        
+    }
+
     function equipToy(itemName, itemSlotName) {
         BC_XToys_Websockets.sendFormattedArgs('itemAdded', [
             ['assetName', itemName],
@@ -558,8 +617,6 @@ const Item_State_Handler = (function () {
         }
     }
 
-
-
     // Toys affecting player
     function handleToyEvents(data) {
         if (data.Type != 'Action'
@@ -596,7 +653,6 @@ const Item_State_Handler = (function () {
     }
 
     // Chatroom command injection 
-
     let FullWssURLRegex = /wss:\/\/([0-9A-Za-z]+(\.[0-9A-Za-z]+)+)\/[0-9A-Za-z]+/i;
     let FullWsURLRegex = /ws:\/\/([0-9A-Za-z.:]+)/i;
     let CharactersRegex = /^[0-9A-Za-z]*$/i;
@@ -769,6 +825,7 @@ const Item_State_Handler = (function () {
         handleActivities(data);
         handleItemEquip(data);
         handleToyEvents(data);
+        handleCustomTextItems(data);
     });
 
     /*
