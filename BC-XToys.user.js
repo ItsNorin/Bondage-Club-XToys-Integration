@@ -241,6 +241,7 @@ modApi.hookFunction(
     'ServerSetConnected',
     2,
     (args, next) => {
+        //console.log("ServerSetConnected");
         next(args);
         if (args[0] == true) {
             BC_XToys_Websockets.connectToSavedSocketsIfAllowed();
@@ -251,7 +252,7 @@ modApi.hookFunction(
 // Ongoing slot state handler, use this to avoid sending duplicate messages for restraint and toy related events
 const Item_State_Handler = (function () {
     // states is a map of slot names, each containing:
-    // - the current a worn item name 
+    // - the current a worn item name
     // - a map of stateTypes with a level
     const _states = new Map();
 
@@ -299,7 +300,7 @@ const Item_State_Handler = (function () {
 
     // true if shock with given slot and level is in history
     function _hasShockInHistory(slot, level) {
-        for (i in _shockHistory) {
+        for (let i in _shockHistory) {
             if (_shockHistory[i][1] == slot && _shockHistory[i][2] == level) {
                 return true;
             }
@@ -651,7 +652,7 @@ const Item_State_Handler = (function () {
         ChatRoomSendLocal(BC_XToysFirstJoinMsg, 60000);
         BC_XToysSendJoinMsg = false;
     }
-
+  
     // Chatroom command injection 
     let FullWssURLRegex = /wss:\/\/([0-9A-Za-z]+(\.[0-9A-Za-z]+)+)\/[0-9A-Za-z]+/i;
     let FullWsURLRegex = /ws:\/\/([0-9A-Za-z.:]+)/i;
@@ -906,14 +907,14 @@ const Item_State_Handler = (function () {
     // Manually clicking own worn item state
     modApi.hookFunction(
         'ExtendedItemSetOption',
-        6,
+        7,
         (args, next) => {
             next(args);
             //console.log("ExtendedItemSetOption");
             //console.log(args);
 
             // vibrate or inflation event
-            if (args.length == 6 && args[1]?.MemberNumber == Player.MemberNumber) {
+            if (args.length >= 6 && args[1]?.MemberNumber == Player.MemberNumber) {
                 const item = args[2];
                 var slotName = item?.Asset?.DynamicGroupName;
                 if (slotName == null) { return; }
