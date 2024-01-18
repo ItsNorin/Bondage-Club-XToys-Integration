@@ -359,7 +359,7 @@ const Item_State_Handler = (function () {
         },
 
         updateItemProperties: function (effect, xToysDataTag, slot, itemName, level, levelOffset = 0) {
-            console.log("effect:" + effect + "  xToysDataTag:" + xToysDataTag + "  slot:" + slot + "  itemName:" + itemName + "  level:" + level);
+            //console.log("effect:" + effect + "  xToysDataTag:" + xToysDataTag + "  slot:" + slot + "  itemName:" + itemName + "  level:" + level);
             if (slot == undefined || level == undefined || itemName == undefined) { return; }
 
             level += levelOffset;
@@ -819,7 +819,7 @@ const Item_State_Handler = (function () {
         }
 
         sendFirstChatroomMsg(data);
-        console.log(data);
+        //console.log(data);
 
         handlePortalLink(data);
         handleActivities(data);
