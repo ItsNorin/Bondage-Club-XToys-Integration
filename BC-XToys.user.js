@@ -25,19 +25,6 @@ const BC_XToysIgnoreMsgTypes = new Set(['Status', 'Hidden']);
 var BC_XToysSendJoinMsg = true;
 const BC_XToysFirstJoinMsg = BC_XToys_FullName + ' v' + BC_XToys_Version + ' loaded. Use <b>/bcxtoys</b> for help.';
 
-console.log(BC_XToys_ShortName + ' waiting for bcModSdk. If it never loads, please use FUSAM: https://sidiousious.gitlab.io/bc-addon-loader/');
-while(!window.hasOwnProperty('bcModSdk')) {
-    await new Promise(resolve => setTimeout(resolve, 1000));
-}
-
-const modApi = bcModSdk.registerMod({
-    name: "Bondage Club XToys Integration",
-    fullName: BC_XToys_ShortName,
-    version: BC_XToys_Version,
-    repository: "https://github.com/ItsNorin/Bondage-Club-XToys-Integration",
-});
-
-console.log("Loading " + BC_XToys_FullName + " version " + BC_XToys_Version + " with bcModSdk v" + bcModSdk.version);
 
 var BC_XToys_defaultPunishShockLevel = 1;
 var BC_XToys_minTimeBetweenShocks = 500;
@@ -239,19 +226,6 @@ const BC_XToys_Websockets = {
     },
 };
 
-// connecting to websockets every time server gains connection
-modApi.hookFunction(
-    'ServerSetConnected',
-    2,
-    (args, next) => {
-        //console.log("ServerSetConnected");
-        next(args);
-        if (args[0] == true) {
-            BC_XToys_Websockets.connectToSavedSocketsIfAllowed();
-        }
-    }
-);
-
 // Ongoing slot state handler, use this to avoid sending duplicate messages for restraint and toy related events
 const Item_State_Handler = (function () {
     // states is a map of slot names, each containing:
@@ -426,8 +400,38 @@ const Item_State_Handler = (function () {
 
 
 (async function () {
+    console.log(BC_XToys_ShortName + ' waiting for bcModSdk. If it never loads, please use FUSAM: https://sidiousious.gitlab.io/bc-addon-loader/');
+
+    while (!window.hasOwnProperty('bcModSdk')) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    }
+
     await waitFor(() => ServerIsConnected && ServerSocket);
     await waitFor(() => !!Commands);
+
+    const modApi = bcModSdk.registerMod({
+        name: "Bondage Club XToys Integration",
+        fullName: BC_XToys_ShortName,
+        version: BC_XToys_Version,
+        repository: "https://github.com/ItsNorin/Bondage-Club-XToys-Integration",
+    });
+
+    // connecting to websockets every time server gains connection
+    modApi.hookFunction(
+        'ServerSetConnected',
+        2,
+        (args, next) => {
+            //console.log("ServerSetConnected");
+            next(args);
+            if (args[0] == true) {
+                BC_XToys_Websockets.connectToSavedSocketsIfAllowed();
+            }
+        }
+    );
+
+    console.log("Loading " + BC_XToys_FullName + " version " + BC_XToys_Version + " with bcModSdk v" + bcModSdk.version);
+
+
 
 
 
@@ -506,8 +510,8 @@ const Item_State_Handler = (function () {
 
     // for items that don't have states, only readable value is data.Content 
     function handleCustomItemTextAsVibe(
-        slotName, itemName, Content, 
-        itemNameRegex, 
+        slotName, itemName, Content,
+        itemNameRegex,
         offRegex, lowRegex, medRegex, highRegex, maxRegex
     ) {
         if (!itemNameRegex.test(Content)) { return; }
@@ -524,40 +528,40 @@ const Item_State_Handler = (function () {
             intensity = 3;
         } else if (maxRegex.test(Content)) {
             intensity = 4;
-        }  
+        }
 
         if (intensity == -1) { return; }
-        
+
         Item_State_Handler.updateItemProperties('Vibration', 'toyEvent', slotName, itemName, intensity);
     }
 
     function handleCustomTextItems(data) {
         if (data.Type != 'Action'
-            || !( searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') == Player.MemberNumber )
+            || !(searchMsgDictionary(data, 'DestinationCharacter', 'MemberNumber') == Player.MemberNumber)
         ) { return; }
 
         handleCustomItemTextAsVibe(
-            'ItemNipples', 'LactationPump', data.Content, 
-            /LactationPumpPower/i, 
+            'ItemNipples', 'LactationPump', data.Content,
+            /LactationPumpPower/i,
             /ToOff/i, /LowSuction/i, /MediumSuction/i, /HighSuction/i, /MaximumSuction/i
         );
         handleCustomItemTextAsVibe(
-            'ItemNipples', 'NippleSuctionCups', data.Content, 
-            /NipSuc/i, 
+            'ItemNipples', 'NippleSuctionCups', data.Content,
+            /NipSuc/i,
             /ToLoose/i, /ToLight/i, /ToMedium/i, /ToHeavy/i, /ToMaximum/i
         );
         handleCustomItemTextAsVibe(
-            'ItemNipples', 'PlateClamps', data.Content, 
-            /ItemNipplesPlate/i, 
+            'ItemNipples', 'PlateClamps', data.Content,
+            /ItemNipplesPlate/i,
             /ClampsLoose/i, /ClampsLoose/i, /ClampsLoose/i, /ClampsLoose/i, /ClampsTight/i
         );
         handleCustomItemTextAsVibe(
-            'ItemButt', 'ButtPump', data.Content, 
-            /BPumps/i, 
+            'ItemButt', 'ButtPump', data.Content,
+            /BPumps/i,
             /ToEmpty/i, /ToLight/i, /ToInflated/i, /ToBloated/i, /ToMaximum/i
         );
 
-        
+
     }
 
     function equipToy(itemName, itemSlotName) {
@@ -655,7 +659,7 @@ const Item_State_Handler = (function () {
         ChatRoomSendLocal(BC_XToysFirstJoinMsg, 60000);
         BC_XToysSendJoinMsg = false;
     }
-  
+
     // Chatroom command injection 
     let FullWssURLRegex = /wss:\/\/([0-9A-Za-z]+(\.[0-9A-Za-z]+)+)\/[0-9A-Za-z]+/i;
     let FullWsURLRegex = /ws:\/\/([0-9A-Za-z.:]+)/i;
