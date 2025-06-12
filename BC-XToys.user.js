@@ -23,7 +23,7 @@ const BC_XToysIgnoreMsgContents = new Set(['BCXMsg', 'BCEMsg', 'Preference', 'Wa
 const BC_XToysIgnoreMsgTypes = new Set(['Status', 'Hidden']);
 
 var BC_XToysSendJoinMsg = true;
-const BC_XToysFirstJoinMsg = BC_XToys_FullName + ' v' + BC_XToys_Version + ' loaded. Use <b>/bcxtoys</b> for help.';
+const BC_XToysFirstJoinMsg = BC_XToys_FullName + ' v' + BC_XToys_Version + ' loaded. Use <b>/bcxtoys</b> for help. This extension is no longer actively maintained, if issues happen, they likely will never be fixed.';
 
 
 var BC_XToys_defaultPunishShockLevel = 1;
@@ -671,6 +671,8 @@ const Item_State_Handler = (function () {
         Action: (_, command, args) => {
             const FullHelpMsg = '<b>' + BC_XToys_FullName + '</b> v' + BC_XToys_Version + '\n'
                 + 'Github: <a href="https://github.com/ItsNorin/Bondage-Club-XToys-Integration" target="_blank" rel="noopener noreferrer">github.com/ItsNorin/Bondage-Club-XToys-Integration</a>\n\n'
+
+                + '\n<b>This extension is no longer actively maintained, if issues happen, they likely will never be fixed.</b>\n\n'
 
                 + '<b>Commands</b>\n'
 
