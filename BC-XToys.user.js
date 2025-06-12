@@ -953,7 +953,7 @@ const Item_State_Handler = (function () {
         'InventoryWear',
         8,
         (args, next) => {
-            next(args);
+            const ret = next(args);
             if (args[0]?.MemberNumber == Player.MemberNumber) {
                 const itemA = getPlayerAssetByName(args[1]);
                 var name = itemA?.Asset?.Name;
@@ -962,6 +962,7 @@ const Item_State_Handler = (function () {
                     equipToy(name, slot);
                 }
             }
+            return ret;
         }
     );
 
